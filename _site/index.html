@@ -160,9 +160,679 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>This is a Quarto website.</p>
 <p>To learn more about Quarto websites visit <a href="https://quarto.org/docs/websites" class="uri">https://quarto.org/docs/websites</a>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(dplyr))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(tidyr))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(rlang))</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(purrr))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(stringr))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">walk</span>(<span class="fu">list.files</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>), <span class="at">pattern =</span> <span class="st">".R"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>), source)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> pharmaverseadam<span class="sc">::</span>adsl <span class="sc">|&gt;</span> <span class="fu">na_to_missing</span>()</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>adlb <span class="ot">&lt;-</span> pharmaverseadam<span class="sc">::</span>adlb <span class="sc">|&gt;</span> <span class="fu">na_to_missing</span>()</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>adlb <span class="ot">&lt;-</span> adlb <span class="sc">|&gt;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">modify_at</span>(</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"BNRIND"</span>, <span class="st">"ANRIND"</span>),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    \(x) <span class="fu">case_match</span>(</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>      x,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">"H"</span> <span class="sc">~</span> <span class="st">"High"</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>      <span class="st">"L"</span> <span class="sc">~</span> <span class="st">"Low"</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>      <span class="st">"N"</span> <span class="sc">~</span> <span class="st">"Normal"</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">.default =</span> <span class="fu">str_to_title</span>(x)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>adsl_bign <span class="ot">&lt;-</span> <span class="fu">select</span>(adsl, <span class="fu">all_of</span>(<span class="fu">c</span>(<span class="st">"USUBJID"</span>, <span class="st">"TRT01A"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_count</span>(.data<span class="sc">$</span>TRT01A, <span class="at">name =</span> <span class="st">"TRT_N"</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># add `N` to the BDS dataset</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>bds_df <span class="ot">&lt;-</span> adlb <span class="sc">|&gt;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(.data<span class="sc">$</span>AVAL), .data<span class="sc">$</span>BNRIND <span class="sc">!=</span> <span class="st">"&lt;Missing&gt;"</span>, .data<span class="sc">$</span>ANRIND <span class="sc">!=</span> <span class="st">"&lt;Missing&gt;"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(adsl_bign) <span class="sc">|&gt;</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">trt_var =</span> <span class="fu">paste0</span>(.data<span class="sc">$</span>TRT01A, <span class="st">"&lt;br&gt;(N="</span>, TRT_N, <span class="st">")"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>TRT_N) <span class="sc">|&gt;</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter_if</span>(<span class="fu">expr</span>(PARCAT1 <span class="sc">==</span> <span class="st">"URINALYSIS"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(USUBJID, TRT01A)`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>tab_spanners <span class="ot">&lt;-</span> <span class="fu">unique</span>(bds_df<span class="sc">$</span>trt_var)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>denom <span class="ot">&lt;-</span> <span class="fu">get_N_from_labels</span>(tab_spanners, <span class="st">"N="</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>rep <span class="ot">&lt;-</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">build_shift_table</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">bds_dataset =</span> bds_df,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">trt_var =</span> <span class="fu">exprs</span>(trt_var),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">analysis_grade_var =</span> <span class="fu">exprs</span>(ANRIND),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">base_grade_var =</span> <span class="fu">exprs</span>(BNRIND),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">grade_var_order =</span> <span class="fu">exprs</span>(Low, Normal, High)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>rep <span class="sc">|&gt;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>(<span class="at">groupname_col =</span> <span class="st">"PARAM"</span>, <span class="at">row_group_as_column =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label</span>(<span class="at">BNRIND =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"Reference Range&lt;br&gt;Indicator"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label_with</span>(<span class="at">columns =</span> <span class="fu">contains</span>(<span class="st">"&lt;-&gt;"</span>), \(x) <span class="fu">custom_split</span>(x, <span class="st">"&lt;-&gt;"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_spanner</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">1</span>]), <span class="at">label =</span> gt<span class="sc">::</span><span class="fu">md</span>(tab_spanners[<span class="dv">1</span>])) <span class="sc">|&gt;</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_spanner</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">2</span>]), <span class="at">label =</span> gt<span class="sc">::</span><span class="fu">md</span>(tab_spanners[<span class="dv">2</span>])) <span class="sc">|&gt;</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_spanner</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">3</span>]), <span class="at">label =</span> gt<span class="sc">::</span><span class="fu">md</span>(tab_spanners[<span class="dv">3</span>])) <span class="sc">|&gt;</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">data_color</span>(<span class="at">method =</span> <span class="st">"numeric"</span>, <span class="at">palette =</span> <span class="fu">gt_pal</span>(), <span class="at">columns =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">11</span>, <span class="dv">13</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">text_transform</span>(</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">fn =</span> \(x) <span class="fu">add_pct</span>(x, denom[<span class="dv">1</span>], <span class="dv">2</span>),</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_body</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">1</span>]))</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">text_transform</span>(</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">fn =</span> \(x) <span class="fu">add_pct</span>(x, denom[<span class="dv">2</span>], <span class="dv">2</span>),</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_body</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">2</span>]))</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">text_transform</span>(</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">fn =</span> \(x) <span class="fu">add_pct</span>(x, denom[<span class="dv">3</span>], <span class="dv">2</span>),</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_body</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">3</span>]))</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_stubhead</span>(<span class="at">label =</span> <span class="st">"Parameter"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_source_note</span>(<span class="at">source_note =</span> <span class="st">"This is a source note."</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_footnote</span>(</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"This is a footnote."</span>,</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_body</span>(<span class="at">columns =</span> <span class="dv">1</span>, <span class="at">rows =</span> <span class="dv">1</span>)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_header</span>(</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"The title of the table"</span>,</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"The table's subtitle"</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">opt_table_lines</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div id="gpeaiaxelr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#gpeaiaxelr table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#gpeaiaxelr thead, #gpeaiaxelr tbody, #gpeaiaxelr tfoot, #gpeaiaxelr tr, #gpeaiaxelr td, #gpeaiaxelr th {
+  border-style: none;
+}
+
+#gpeaiaxelr p {
+  margin: 0;
+  padding: 0;
+}
+
+#gpeaiaxelr .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: solid;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#gpeaiaxelr .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#gpeaiaxelr .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#gpeaiaxelr .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#gpeaiaxelr .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#gpeaiaxelr .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gpeaiaxelr .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#gpeaiaxelr .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#gpeaiaxelr .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#gpeaiaxelr .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#gpeaiaxelr .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#gpeaiaxelr .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#gpeaiaxelr .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#gpeaiaxelr .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#gpeaiaxelr .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#gpeaiaxelr .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#gpeaiaxelr .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#gpeaiaxelr .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#gpeaiaxelr .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gpeaiaxelr .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#gpeaiaxelr .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#gpeaiaxelr .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#gpeaiaxelr .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gpeaiaxelr .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#gpeaiaxelr .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#gpeaiaxelr .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gpeaiaxelr .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gpeaiaxelr .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#gpeaiaxelr .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gpeaiaxelr .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#gpeaiaxelr .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gpeaiaxelr .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#gpeaiaxelr .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gpeaiaxelr .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#gpeaiaxelr .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gpeaiaxelr .gt_left {
+  text-align: left;
+}
+
+#gpeaiaxelr .gt_center {
+  text-align: center;
+}
+
+#gpeaiaxelr .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#gpeaiaxelr .gt_font_normal {
+  font-weight: normal;
+}
+
+#gpeaiaxelr .gt_font_bold {
+  font-weight: bold;
+}
+
+#gpeaiaxelr .gt_font_italic {
+  font-style: italic;
+}
+
+#gpeaiaxelr .gt_super {
+  font-size: 65%;
+}
+
+#gpeaiaxelr .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#gpeaiaxelr .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#gpeaiaxelr .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#gpeaiaxelr .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#gpeaiaxelr .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#gpeaiaxelr .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#gpeaiaxelr .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_heading">
+      <td colspan="14" class="gt_heading gt_title gt_font_normal" style="">The title of the table</td>
+    </tr>
+    <tr class="gt_heading">
+      <td colspan="14" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style="">The table's subtitle</td>
+    </tr>
+    <tr class="gt_col_headings gt_spanner_row">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col" id="Parameter">Parameter</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col" id="Reference Range<br>Indicator">Reference Range<br>Indicator</th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="4" scope="colgroup" id="Placebo<br>(N=86)">
+        <span class="gt_column_spanner">Placebo<br>(N=86)</span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="4" scope="colgroup" id="Xanomeline High Dose<br>(N=72)">
+        <span class="gt_column_spanner">Xanomeline High Dose<br>(N=72)</span>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="4" scope="colgroup" id="Xanomeline Low Dose<br>(N=96)">
+        <span class="gt_column_spanner">Xanomeline Low Dose<br>(N=96)</span>
+      </th>
+    </tr>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Low">Low</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Normal">Normal</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="High">High</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Total">Total</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Low">Low</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Normal">Normal</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="High">High</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Total">Total</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Low">Low</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Normal">Normal</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="High">High</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Total">Total</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr class="gt_row_group_first"><td headers="Specific Gravity stub_1_1 stub_1" rowspan="4" class="gt_row gt_left gt_stub_row_group">Specific Gravity</td>
+<td headers="Specific Gravity stub_1_1 BNRIND" class="gt_row gt_left">Low</td>
+<td headers="Specific Gravity stub_1_1 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity stub_1_1 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">1 (1.16%)</td>
+<td headers="Specific Gravity stub_1_1 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity stub_1_1 Placebo<br>(N=86)<->Total" class="gt_row gt_right">1 (1.16%)</td>
+<td headers="Specific Gravity stub_1_1 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity stub_1_1 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">2 (2.78%)</td>
+<td headers="Specific Gravity stub_1_1 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity stub_1_1 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">2 (2.78%)</td>
+<td headers="Specific Gravity stub_1_1 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity stub_1_1 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">2 (2.08%)</td>
+<td headers="Specific Gravity stub_1_1 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity stub_1_1 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">2 (2.08%)</td></tr>
+    <tr><td headers="Specific Gravity BNRIND_2 BNRIND" class="gt_row gt_left">Normal</td>
+<td headers="Specific Gravity BNRIND_2 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity BNRIND_2 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">78 (90.7%)</td>
+<td headers="Specific Gravity BNRIND_2 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">3 (3.49%)</td>
+<td headers="Specific Gravity BNRIND_2 Placebo<br>(N=86)<->Total" class="gt_row gt_right">81 (94.19%)</td>
+<td headers="Specific Gravity BNRIND_2 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity BNRIND_2 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">65 (90.28%)</td>
+<td headers="Specific Gravity BNRIND_2 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FDB397; color: #000000;">2 (2.78%)</td>
+<td headers="Specific Gravity BNRIND_2 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">67 (93.06%)</td>
+<td headers="Specific Gravity BNRIND_2 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity BNRIND_2 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">87 (90.62%)</td>
+<td headers="Specific Gravity BNRIND_2 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #D72522; color: #FFFFFF;">5 (5.21%)</td>
+<td headers="Specific Gravity BNRIND_2 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">92 (95.83%)</td></tr>
+    <tr><td headers="Specific Gravity BNRIND_3 BNRIND" class="gt_row gt_left">High</td>
+<td headers="Specific Gravity BNRIND_3 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity BNRIND_3 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Specific Gravity BNRIND_3 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">3 (3.49%)</td>
+<td headers="Specific Gravity BNRIND_3 Placebo<br>(N=86)<->Total" class="gt_row gt_right">3 (3.49%)</td>
+<td headers="Specific Gravity BNRIND_3 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity BNRIND_3 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Specific Gravity BNRIND_3 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FC7252; color: #FFFFFF;">3 (4.17%)</td>
+<td headers="Specific Gravity BNRIND_3 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">3 (4.17%)</td>
+<td headers="Specific Gravity BNRIND_3 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity BNRIND_3 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Specific Gravity BNRIND_3 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFEEE6; color: #000000;">1 (1.04%)</td>
+<td headers="Specific Gravity BNRIND_3 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">1 (1.04%)</td></tr>
+    <tr><td headers="Specific Gravity BNRIND_4 BNRIND" class="gt_row gt_left">Total</td>
+<td headers="Specific Gravity BNRIND_4 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity BNRIND_4 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">79 (91.86%)</td>
+<td headers="Specific Gravity BNRIND_4 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">6 (6.98%)</td>
+<td headers="Specific Gravity BNRIND_4 Placebo<br>(N=86)<->Total" class="gt_row gt_right">85 (98.84%)</td>
+<td headers="Specific Gravity BNRIND_4 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity BNRIND_4 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">67 (93.06%)</td>
+<td headers="Specific Gravity BNRIND_4 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">5 (6.94%)</td>
+<td headers="Specific Gravity BNRIND_4 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">72 (100%)</td>
+<td headers="Specific Gravity BNRIND_4 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="Specific Gravity BNRIND_4 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">89 (92.71%)</td>
+<td headers="Specific Gravity BNRIND_4 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">6 (6.25%)</td>
+<td headers="Specific Gravity BNRIND_4 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">95 (98.96%)</td></tr>
+    <tr class="gt_row_group_first"><td headers="pH stub_1_5 stub_1" rowspan="4" class="gt_row gt_left gt_stub_row_group">pH</td>
+<td headers="pH stub_1_5 BNRIND" class="gt_row gt_left">Low</td>
+<td headers="pH stub_1_5 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="pH stub_1_5 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="pH stub_1_5 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="pH stub_1_5 Placebo<br>(N=86)<->Total" class="gt_row gt_right">0 (0%)</td>
+<td headers="pH stub_1_5 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="pH stub_1_5 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="pH stub_1_5 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="pH stub_1_5 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">0 (0%)</td>
+<td headers="pH stub_1_5 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="pH stub_1_5 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="pH stub_1_5 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="pH stub_1_5 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">0 (0%)</td></tr>
+    <tr><td headers="pH BNRIND_6 BNRIND" class="gt_row gt_left">Normal</td>
+<td headers="pH BNRIND_6 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_6 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">85 (98.84%)</td>
+<td headers="pH BNRIND_6 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_6 Placebo<br>(N=86)<->Total" class="gt_row gt_right">85 (98.84%)</td>
+<td headers="pH BNRIND_6 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_6 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">72 (100%)</td>
+<td headers="pH BNRIND_6 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_6 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">72 (100%)</td>
+<td headers="pH BNRIND_6 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_6 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">95 (98.96%)</td>
+<td headers="pH BNRIND_6 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_6 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">95 (98.96%)</td></tr>
+    <tr><td headers="pH BNRIND_7 BNRIND" class="gt_row gt_left">High</td>
+<td headers="pH BNRIND_7 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_7 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="pH BNRIND_7 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_7 Placebo<br>(N=86)<->Total" class="gt_row gt_right">0 (0%)</td>
+<td headers="pH BNRIND_7 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_7 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="pH BNRIND_7 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_7 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">0 (0%)</td>
+<td headers="pH BNRIND_7 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_7 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="pH BNRIND_7 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_7 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">0 (0%)</td></tr>
+    <tr><td headers="pH BNRIND_8 BNRIND" class="gt_row gt_left">Total</td>
+<td headers="pH BNRIND_8 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_8 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">85 (98.84%)</td>
+<td headers="pH BNRIND_8 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_8 Placebo<br>(N=86)<->Total" class="gt_row gt_right">85 (98.84%)</td>
+<td headers="pH BNRIND_8 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_8 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">72 (100%)</td>
+<td headers="pH BNRIND_8 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_8 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">72 (100%)</td>
+<td headers="pH BNRIND_8 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_8 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">95 (98.96%)</td>
+<td headers="pH BNRIND_8 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="pH BNRIND_8 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">95 (98.96%)</td></tr>
+  </tbody>
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" colspan="14">This is a source note.</td>
+    </tr>
+  </tfoot>
+  
+</table>
+</div>
 </div>
 </div>
 
