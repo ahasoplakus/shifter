@@ -1,0 +1,76 @@
+library(dplyr)
+library(tidyr)
+library(rlang)
+library(purrr)
+library(stringr)
+
+walk(list.files(here::here("R"), pattern = ".R", full.names = TRUE), source)
+
+adsl <- pharmaverseadam::adsl |> na_to_missing()
+adlb <- pharmaverseadam::adlb |> na_to_missing()
+
+adlb <- adlb |>
+  modify_at(
+    c("BNRIND", "ANRIND"),
+    \(x) case_match(
+      x,
+      "H" ~ "High",
+      "L" ~ "Low",
+      "N" ~ "Normal",
+      .default = str_to_title(x)
+    )
+  )
+
+adsl_bign <- select(adsl, all_of(c("USUBJID", "TRT01A"))) |>
+  add_count(.data$TRT01A, name = "TRT_N")
+# add `N` to the BDS dataset
+bds_df <- adlb |>
+  filter(!is.na(.data$AVAL), .data$BNRIND != "<Missing>", .data$ANRIND != "<Missing>") |>
+  left_join(adsl_bign) |>
+  mutate(trt_var = paste0(.data$TRT01A, "<br>(N=", TRT_N, ")")) |>
+  select(-TRT_N) |>
+  filter_if(NULL)
+
+rep <-
+  build_shift_table(
+    bds_dataset = bds_df,
+    trt_var = exprs(trt_var),
+    analysis_grade_var = exprs(ANRIND),
+    base_grade_var = exprs(BNRIND),
+    grade_var_order = exprs(Low, Normal, High)
+  )
+
+tab_spanners <- unique(bds_df$trt_var)
+denom <- get_N_from_labels(tab_spanners, "N=")
+
+rep |>
+  gt::gt(groupname_col = "PARAM", row_group_as_column = TRUE) |>
+  gt::cols_label(BNRIND = gt::md("Reference Range<br>Indicator")) |>
+  gt::cols_label_with(columns = contains("<->"), \(x) custom_split(x, "<->")) |>
+  gt::tab_spanner(columns = contains(tab_spanners[1]), label = gt::md(tab_spanners[1])) |>
+  gt::tab_spanner(columns = contains(tab_spanners[2]), label = gt::md(tab_spanners[2])) |>
+  gt::tab_spanner(columns = contains(tab_spanners[3]), label = gt::md(tab_spanners[3])) |>
+  gt::data_color(method = "numeric", palette = gt_pal(), columns = c(3, 5, 7, 9, 11, 13)) |>
+  gt::text_transform(
+    fn = \(x) add_pct(x, denom[1], 2),
+    locations = gt::cells_body(columns = contains(tab_spanners[1]))
+  ) |>
+  gt::text_transform(
+    fn = \(x) add_pct(x, denom[2], 2),
+    locations = gt::cells_body(columns = contains(tab_spanners[2]))
+  ) |>
+  gt::text_transform(
+    fn = \(x) add_pct(x, denom[3], 2),
+    locations = gt::cells_body(columns = contains(tab_spanners[3]))
+  ) |>
+  gt::tab_stubhead(label = "Parameter") |>
+  gt::tab_source_note(source_note = "This is a source note.") |>
+  gt::tab_footnote(
+    footnote = "This is a footnote.",
+    locations = gt::cells_body(columns = 1, rows = 1)
+  ) |>
+  gt::tab_header(
+    title = "The title of the table",
+    subtitle = "The table's subtitle"
+  ) |>
+  gt::opt_table_lines()
