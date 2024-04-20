@@ -52,3 +52,46 @@ gt_pal <- function() {
     "#A50F15"
   )
 }
+
+glimpse_dataset <-
+  function(dataset,
+           display_vars = NULL,
+           filter = NULL) {
+    out <- dataset %>%
+      filter_if(filter) %>%
+      mutate(across(where(is.character), as.factor))
+
+    if (!is.null(display_vars)) {
+      hide_columns <- which(!(colnames(out) %in% expr2var(display_vars)))
+      cols_to_hide <-
+        list(list(targets = hide_columns - 1, visible = FALSE))
+    } else {
+      cols_to_hide <- list()
+    }
+
+    DT::datatable(
+      out,
+      rownames = FALSE,
+      filter = "top",
+      height = "auto",
+      width = "auto",
+      extensions = c("Buttons", "ColReorder", "Scroller"),
+      options = list(
+        columnDefs = cols_to_hide,
+        searchHighlight = TRUE,
+        searching = TRUE,
+        pageLength = 5,
+        lengthMenu = c(5, 10, 15, 20, 50, 100),
+        dom = "<Bfr<\"dt-scroll\"t>ipl>",
+        buttons = list(
+          list(
+            extend = "colvis",
+            text = "Choose the columns to display",
+            scroller = TRUE,
+            collectionLayout = "fixed two-column"
+          )
+        ),
+        colReorder = TRUE
+      )
+    )
+  }

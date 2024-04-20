@@ -11,8 +11,9 @@ website:
       - href: shift.qmd
         text: Shift Table
         icon: code
-      - href: about.qmd
-        icon: question-circle
+     # - href: about.qmd
+      #  icon: question-circle
+    right:
       - href: https://github.com/ahasoplakus/shifter
         text: Source
         icon: github
@@ -24,6 +25,8 @@ format:
     css: styles.css
     toc: true
     toc-location: left
+    page-layout: full
+    code-fold: show
 
 editor: visual
 

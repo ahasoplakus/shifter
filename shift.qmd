@@ -26,14 +26,22 @@ The following ADSL and ADLB ADaM datasets from `{pharmaverseadam}` R package are
 
 ```{r}
 adsl <- pharmaverseadam::adsl
-slice_head(adsl, n = 10)
+```
+
+```{r}
+#| echo: false
+glimpse_dataset(adsl)
 ```
 
 ## ADLB
 
 ```{r}
 adlb <- pharmaverseadam::adlb
-slice_head(adlb, n = 10)
+```
+
+```{r}
+#| echo: false
+glimpse_dataset(slice_head(adlb, n = 500))
 ```
 
 :::
@@ -42,10 +50,19 @@ slice_head(adlb, n = 10)
 
 ### 1. Calculating BIG N
 
+The ADSL is the analysis dataset for each subject level. Initially subset the ADSL dataset with safety subjects only. Count number of subjects participating in each treatment group.
+
 ```{r adsl_n}
-adsl_bign <- select(na_to_missing(adsl), all_of(c("USUBJID", "TRT01A"))) |>
+adsl_bign <- adsl |>
+  na_to_missing() |>
+  filter(.data$SAFFL == "Y") |>
+  select(all_of(c("USUBJID", "TRT01A"))) |>
   add_count(.data$TRT01A, name = "TRT_N")
-adsl_bign
+```
+
+```{r}
+#| echo: false
+glimpse_dataset(adsl_bign)
 ```
 
 ### 2. Pre-process Lab data
@@ -53,6 +70,7 @@ adsl_bign
 -   Filter out missing values in `BNRIND, ANRIND, AVAL`
 -   Merge `adsl` to `adlb` to add `BIG N`
 -   Keep only <b>Hemoglobin</b> records which is our parameter of interest for this example
+-   Subset the ADLB dataset for safety subjects where analysis flag is equal to `Y` and at post-dose
 -   Filter out Unscheduled Visit records
 -   Concatenate `BIG N` with Treatment Labels in `trt_var`
 
@@ -64,7 +82,6 @@ adlb_prep <- adlb |>
   mutate(across(all_of(c("BNRIND", "ANRIND")), str_to_title)) |>
   left_join(adsl_bign) |>
   filter(
-    .data$SAFFL == "Y",
     .data$ANL01FL == "Y",
     !is.na(.data$AVAL),
     .data$BNRIND != "<Missing>",
@@ -78,11 +95,17 @@ adlb_prep <- adlb |>
   ) |>
   mutate(trt_var = paste0(.data$TRT01A, "<br>(N=", TRT_N, ")")) |>
   select(-TRT_N)
-
-adlb_prep
 ```
 
-Storing some table options (headers and labels) for later usage
+```{r}
+#| echo: false
+glimpse_dataset(adlb_prep)
+```
+
+<br>
+Storing some table options (headers and labels) to use while displaying the
+final table
+</br>
 
 ```{r tab_options}
 tab_spanners <- unique(adlb_prep$trt_var)
@@ -106,7 +129,11 @@ all_anrind_comb <- expand_grid(
   BNRIND = as.factor(c("Low", "Normal", "High", "Total"))
 ) |>
   cross_join(tibble(ANRIND = as.factor(c("Low", "Normal", "High"))))
-all_anrind_comb
+```
+
+```{r}
+#| echo: false
+glimpse_dataset(all_anrind_comb)
 ```
 
 ### 4. Performing Counts
@@ -126,7 +153,11 @@ shift_counts <- adlb_prep |>
     .data[["AVISITN"]]
   ) |>
   select(-all_of("AVISITN"))
-shift_counts
+```
+
+```{r}
+#| echo: false
+glimpse_dataset(shift_counts)
 ```
 
 ### 5. Reshape Data and count Grade Totals
@@ -146,7 +177,6 @@ post_base_grade_totals <- shift_wide |>
 
 shift_final <- shift_wide |>
   bind_rows(post_base_grade_totals)
-shift_final
 ```
 
 The same could be attained by creating a function `build_shift_table()` which covers Steps 3-5
@@ -162,6 +192,11 @@ shift_final <-
     grade_var_order = exprs(Low, Normal, High),
     visit_var = exprs(AVISIT, AVISITN)
   )
+```
+
+```{r}
+#| echo: false
+glimpse_dataset(shift_final)
 ```
 
 ### 6. Display the final table
@@ -197,8 +232,8 @@ shift_final |>
     locations = gt::cells_body(columns = 1, rows = 1)
   ) |>
   gt::tab_header(
-    title = gt::md("Table x.x<br>Shift Table of Lab Hematology"),
-    subtitle = "Full Safety Analysis Set"
+    title = gt::md("Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"),
+    subtitle = "Parameter: Hemoglobin"
   ) |>
   gt::opt_table_lines()
 ```
