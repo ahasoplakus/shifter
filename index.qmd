@@ -1,5 +1,5 @@
 ---
-title: "Tidy approach to create Shift Tables using {tidyverse} and {gt}"
+title: "A Tidy approach to create Shift Tables using {tidyverse} and {gt}"
 ---
 
 ## Shift Tables in Clinical Trials
