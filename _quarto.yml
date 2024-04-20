@@ -6,15 +6,24 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Home
-      - about.qmd
+        text: Introduction
+        icon: house
+      - href: shift.qmd
+        text: Shift Table
+        icon: code
+      - href: about.qmd
+        icon: question-circle
+      - href: https://github.com/ahasoplakus/shifter
+        text: Source
+        icon: github
 
 format:
   html:
     theme: yeti
+    smooth-scroll: true
     css: styles.css
     toc: true
-    toc_float: false
+    toc-location: left
 
 editor: visual
 

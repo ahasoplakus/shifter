@@ -15,7 +15,6 @@ get_worst_grade <- function(df, grade_var, group_vars) {
 
 get_all_grades <-
   function(df,
-           source_df,
            trt_var,
            visit_var,
            analysis_grade_var,
@@ -23,7 +22,7 @@ get_all_grades <-
            grade_var_order) {
     expand_grid(
       !!trt_var := unique(df[[trt_var]]),
-      !!visit_var := intersect(levels(as.factor(source_df[[visit_var]])), unique(df[[visit_var]])),
+      !!visit_var := intersect(levels(as.factor(df[[visit_var]])), unique(df[[visit_var]])),
       !!base_grade_var := as.factor(c(grade_var_order, "Total"))
     ) |>
       cross_join(tibble(!!analysis_grade_var := as.factor(grade_var_order)))
@@ -59,17 +58,17 @@ build_shift_table <-
     visit_var <- expr2var(visit_var)
     group_vars <- c(trt_var, visit_var)
     # get highest values of `analysis_grade_var` within each Treatment and Parameter group
-    wrst_grade <- bds_dataset |>
-      get_worst_grade(analysis_grade_var, group_vars)
+    # wrst_grade <- bds_dataset |>
+    #   get_worst_grade(analysis_grade_var, group_vars)
     # create a dataset {all_anrind_comb} with all possible combinations of Treatment, Parameter and
     # `analysis_grade_var`
-    all_anrind_comb <- wrst_grade |>
+    all_anrind_comb <- bds_dataset |>
       get_all_grades(
-        bds_dataset, trt_var, visit_var[1], analysis_grade_var, base_grade_var, grade_var_order
+        trt_var, visit_var[1], analysis_grade_var, base_grade_var, grade_var_order
       )
     # get the count of parameter shift and merge with {all_anrind_comb} to preserve all combinations
     # of `analysis_grade_var`
-    grade_counts_wide <- wrst_grade |>
+    grade_counts_wide <- bds_dataset |>
       summarize_grades(
         all_anrind_comb,
         trt_var,
@@ -79,9 +78,9 @@ build_shift_table <-
       ) |>
       arrange(
         .data[[trt_var]],
-        .data[[visit_var[2]]],
-        factor(.data[[base_grade_var]], levels = grade_var_order),
-        factor(.data[[analysis_grade_var]], levels = grade_var_order)
+        factor(.data[[base_grade_var]], levels = c(grade_var_order, "Total")),
+        factor(.data[[analysis_grade_var]], levels = c(grade_var_order, "Total")),
+        .data[[visit_var[2]]]
       ) |>
       select(-all_of(visit_var[2])) |>
       ## pivot to get values of `base_grade_var` as columns

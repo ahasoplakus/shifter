@@ -1,0 +1,204 @@
+---
+title: "Creating a Shift Table in R"
+---
+
+We will focus on how to create such a laboratory shift table in a step-wise explanation.
+
+## Required Packages {.unnumbered}
+
+```{r setup}
+#| warning: false
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(tidyr))
+suppressPackageStartupMessages(library(rlang))
+suppressPackageStartupMessages(library(purrr))
+suppressPackageStartupMessages(library(stringr))
+
+walk(list.files(here::here("R"), pattern = ".R", full.names = TRUE), source)
+```
+
+## Data used for Analysis {.unnumbered}
+
+The following ADSL and ADLB ADaM datasets from `{pharmaverseadam}` R package are used in creation of shift table and help with understanding the programming process.
+
+::: {.panel-tabset}
+## ADSL
+
+```{r}
+adsl <- pharmaverseadam::adsl
+slice_head(adsl, n = 10)
+```
+
+## ADLB
+
+```{r}
+adlb <- pharmaverseadam::adlb
+slice_head(adlb, n = 10)
+```
+
+:::
+
+## Steps to create a Shift Table {.unnumbered}
+
+### 1. Calculating BIG N
+
+```{r adsl_n}
+adsl_bign <- select(na_to_missing(adsl), all_of(c("USUBJID", "TRT01A"))) |>
+  add_count(.data$TRT01A, name = "TRT_N")
+adsl_bign
+```
+
+### 2. Pre-process Lab data
+
+-   Filter out missing values in `BNRIND, ANRIND, AVAL`
+-   Merge `adsl` to `adlb` to add `BIG N`
+-   Keep only <b>Hemoglobin</b> records which is our parameter of interest for this example
+-   Filter out Unscheduled Visit records
+-   Concatenate `BIG N` with Treatment Labels in `trt_var`
+
+```{r prep_adlb}
+#| warning: false
+#| message: false
+adlb_prep <- adlb |>
+  na_to_missing() |>
+  mutate(across(all_of(c("BNRIND", "ANRIND")), str_to_title)) |>
+  left_join(adsl_bign) |>
+  filter(
+    .data$SAFFL == "Y",
+    .data$ANL01FL == "Y",
+    !is.na(.data$AVAL),
+    .data$BNRIND != "<Missing>",
+    .data$ANRIND != "<Missing>",
+    .data$PARAMCD == "HGB",
+    str_detect(
+      toupper(.data$AVISIT),
+      "UNSCHEDULED|BASELINE",
+      negate = TRUE
+    )
+  ) |>
+  mutate(trt_var = paste0(.data$TRT01A, "<br>(N=", TRT_N, ")")) |>
+  select(-TRT_N)
+
+adlb_prep
+```
+
+Storing some table options (headers and labels) for later usage
+
+```{r tab_options}
+tab_spanners <- unique(adlb_prep$trt_var)
+tab_spanners
+m_tab_spanners <- paste0(tab_spanners, "<br>Baseline<br>n (%)")
+m_tab_spanners
+N_Placebo <- get_trt_N(adsl_bign, "TRT01A", "Placebo")
+N_Placebo
+N_Xano_High <- get_trt_N(adsl_bign, "TRT01A", "Xanomeline High Dose")
+N_Xano_High
+N_Xano_Low <- get_trt_N(adsl_bign, "TRT01A", "Xanomeline Low Dose")
+N_Xano_Low
+```
+
+### 3. Creating a dummy dataset to get all combinations of ANRIND and BNRIND
+
+``` {r dummy}
+all_anrind_comb <- expand_grid(
+  trt_var = unique(adlb_prep[["trt_var"]]),
+  AVISIT = intersect(levels(as.factor(adlb_prep[["AVISIT"]])), unique(adlb_prep[["AVISIT"]])),
+  BNRIND = as.factor(c("Low", "Normal", "High", "Total"))
+) |>
+  cross_join(tibble(ANRIND = as.factor(c("Low", "Normal", "High"))))
+all_anrind_comb
+```
+
+### 4. Performing Counts
+
+```{r count}
+shift_counts <- adlb_prep |>
+  bind_rows(mutate(adlb_prep, BNRIND = "Total")) |>
+  group_by(!!!syms(c("trt_var", "AVISITN", "ANRIND", "BNRIND"))) |>
+  count(.data[["AVISIT"]], name = "CNT") |>
+  ungroup() |>
+  full_join(all_anrind_comb, by = c("trt_var", "AVISIT", "BNRIND", "ANRIND")) |>
+  mutate(across("CNT", ~ replace_na(.x, 0))) |>
+  arrange(
+    .data[["trt_var"]],
+    factor(.data[["BNRIND"]], levels = c("Low", "Normal", "High", "Total")),
+    factor(.data[["ANRIND"]], levels = c("Low", "Normal", "High", "Total")),
+    .data[["AVISITN"]]
+  ) |>
+  select(-all_of("AVISITN"))
+shift_counts
+```
+
+### 5. Reshape Data and count Grade Totals
+
+```{r reshape}
+shift_wide <- shift_counts |>
+  pivot_wider(
+    id_cols = all_of(c("AVISIT", "ANRIND")),
+    names_from = all_of(c("trt_var", "BNRIND")),
+    values_from = "CNT",
+    names_sep = "<->"
+  )
+
+post_base_grade_totals <- shift_wide |>
+  summarize(across(where(is.numeric), sum), .by = all_of("AVISIT")) |>
+  mutate(ANRIND = "Total")
+
+shift_final <- shift_wide |>
+  bind_rows(post_base_grade_totals)
+shift_final
+```
+
+The same could be attained by creating a function `build_shift_table()` which covers Steps 3-5
+
+```{r}
+#| eval: false
+shift_final <-
+  build_shift_table(
+    bds_dataset = adlb_prep,
+    trt_var = exprs(trt_var),
+    analysis_grade_var = exprs(ANRIND),
+    base_grade_var = exprs(BNRIND),
+    grade_var_order = exprs(Low, Normal, High),
+    visit_var = exprs(AVISIT, AVISITN)
+  )
+```
+
+### 6. Display the final table
+
+```{r display}
+shift_final |>
+  gt::gt(groupname_col = "AVISIT", row_group_as_column = TRUE) |>
+  gt::cols_label(ANRIND = gt::md("Post<br>Dose")) |>
+  gt::cols_label_with(columns = contains("<->"), \(x) custom_split(x, "<->")) |>
+  gt::tab_spanner(columns = contains(tab_spanners[1]), label = gt::md(m_tab_spanners[1])) |>
+  gt::tab_spanner(columns = contains(tab_spanners[2]), label = gt::md(m_tab_spanners[2])) |>
+  gt::tab_spanner(columns = contains(tab_spanners[3]), label = gt::md(m_tab_spanners[3])) |>
+  gt::tab_style(
+    style = gt::cell_text(font = "monospace"),
+    locations = gt::cells_body(columns = everything())
+  ) |>
+  gt::text_transform(
+    fn = \(x) add_pct(x, N_Placebo, 2),
+    locations = gt::cells_body(columns = contains(tab_spanners[1]))
+  ) |>
+  gt::text_transform(
+    fn = \(x) add_pct(x, N_Xano_High, 2),
+    locations = gt::cells_body(columns = contains(tab_spanners[2]))
+  ) |>
+  gt::text_transform(
+    fn = \(x) add_pct(x, N_Xano_Low, 2),
+    locations = gt::cells_body(columns = contains(tab_spanners[3]))
+  ) |>
+  gt::tab_stubhead(gt::md("Parameter:<br>Hemoglobin/<br>Analysis Visit")) |>
+  gt::tab_source_note(source_note = "This is a source note.") |>
+  gt::tab_footnote(
+    footnote = "This is a footnote.",
+    locations = gt::cells_body(columns = 1, rows = 1)
+  ) |>
+  gt::tab_header(
+    title = "The title of the table",
+    subtitle = "The table's subtitle"
+  ) |>
+  gt::opt_table_lines()
+```
