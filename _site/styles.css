@@ -1,5 +1,10 @@
 /* css styles */
 .cell-output-display:not(.no-overflow-x), .knitsql-table:not(.no-overflow-x) {
     overflow-x: auto;
-    width: max-content;
+}
+
+div.sourceCode {
+    background-color: ghostwhite;
+    border: 1px solid rgba(204, 204, 204, .65);
+    border-radius: .25rem;
 }

@@ -23,8 +23,12 @@ filter_if <- function(df, filter) {
   }
 }
 
-get_N_from_labels <- function(labels, pattern = "N=") {
-  map_dbl(str_match_all(custom_split(labels, pattern), "[0-9]+"), ~ as.numeric(.x[1]))
+get_trt_N <- function(adsl, trt_var, trt_val) {
+  adsl |>
+    select(-USUBJID) |>
+    distinct() |>
+    filter(.data[[trt_var]] == trt_val) |>
+    pull()
 }
 
 custom_split <- function(string, pattern) {

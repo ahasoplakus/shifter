@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>shiftR</title>
+<title>shift2R - Tidy approach to create Shift Tables using {tidyverse} and {gt}</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -106,7 +106,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">shiftR</span>
+    <span class="navbar-title">shift2R</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -135,14 +135,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#shift-tables-in-clinical-trials" id="toc-shift-tables-in-clinical-trials" class="nav-link active" data-scroll-target="#shift-tables-in-clinical-trials">Shift Tables in Clinical Trials</a>
+  <ul class="collapse">
+  <li><a href="#what-is-a-shift-table" id="toc-what-is-a-shift-table" class="nav-link" data-scroll-target="#what-is-a-shift-table">What is a Shift Table?</a></li>
+  <li><a href="#purpose" id="toc-purpose" class="nav-link" data-scroll-target="#purpose">Purpose</a></li>
+  <li><a href="#shift-table-for-laboratory-results" id="toc-shift-table-for-laboratory-results" class="nav-link" data-scroll-target="#shift-table-for-laboratory-results">Shift Table for Laboratory Results</a></li>
+  </ul></li>
+  <li><a href="#required-packages-and-programs" id="toc-required-packages-and-programs" class="nav-link" data-scroll-target="#required-packages-and-programs">Required Packages and Programs</a></li>
+  <li><a href="#data-used-to-produce-shift-table" id="toc-data-used-to-produce-shift-table" class="nav-link" data-scroll-target="#data-used-to-produce-shift-table">Data used to produce Shift Table</a></li>
+  <li><a href="#steps-to-create-a-shift-table" id="toc-steps-to-create-a-shift-table" class="nav-link" data-scroll-target="#steps-to-create-a-shift-table">Steps to create a Shift Table</a>
+  <ul class="collapse">
+  <li><a href="#calculating-big-n" id="toc-calculating-big-n" class="nav-link" data-scroll-target="#calculating-big-n">1. Calculating BIG N</a></li>
+  <li><a href="#pre-process-lab-data" id="toc-pre-process-lab-data" class="nav-link" data-scroll-target="#pre-process-lab-data">2. Pre-process Lab data</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">shiftR</h1>
+<h1 class="title">Tidy approach to create Shift Tables using {tidyverse} and {gt}</h1>
 </div>
 
 
@@ -157,8 +175,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>This is a Quarto website.</p>
-<p>To learn more about Quarto websites visit <a href="https://quarto.org/docs/websites" class="uri">https://quarto.org/docs/websites</a>.</p>
+<section id="shift-tables-in-clinical-trials" class="level2">
+<h2 class="anchored" data-anchor-id="shift-tables-in-clinical-trials">Shift Tables in Clinical Trials</h2>
+<section id="what-is-a-shift-table" class="level3">
+<h3 class="anchored" data-anchor-id="what-is-a-shift-table">What is a Shift Table?</h3>
+<p>A shift table is a table that displays the number of subjects who are low, normal or high at baseline and the shift at post-dose. Writing code for a shift table is an easier task, if ADaM datasets are used rather than raw datasets. It represents cross frequencies of baseline values with post-dose values. The produced shift table gives safety information of the subjects during the clinical study.</p>
+</section>
+<section id="purpose" class="level3">
+<h3 class="anchored" data-anchor-id="purpose">Purpose</h3>
+<p>The main purpose of shift tables in any clinical trial is to determine how the categorical result varies from baseline to post-dose.</p>
+<p>It is important to look at the effect of the drug by comparing values at baseline and post –baseline in any clinical trials. Shift table is one of the analysis approaches suggested in E3 Guidelines to show the number of patients who are low, normal, or high at baseline and then at selected time intervals. It’s easier to figure out any abnormality in data because the layout helps to get the count of subjects at two time points together. Shift tables can be created for any data like labs, vital signs and ECG etc.</p>
+</section>
+<section id="shift-table-for-laboratory-results" class="level3">
+<h3 class="anchored" data-anchor-id="shift-table-for-laboratory-results">Shift Table for Laboratory Results</h3>
+<p>All safety related data is collected in a clinical trial study for safety analysis. The laboratory data is one of the most important parts of safety analysis in any drug discovery study. The data mapping team and Statistical Programmers in the clinical programming department support the clinical data analysis and reporting process. The data mapping team analyzes and creates SDTM datasets from raw datasets. The Statistical Programming team creates the ADaM datasets and generates reports in a clinical study. ADaM data structure is such that, it has all the necessary variables needed to create reporting code and this makes the job easier for programmers.</p>
+<p>There are several summary tables commonly used to produce laboratory results. Descriptive statistics, clinically significance, shift tables and toxicity grade summaries are some of the summary tables that are commonly used. The shift table is one of the most frequently requested in a clinical study by statisticians or clinicians. The site that provides the laboratory results usually produces the normal ranges for numeric lab tests. The study team analyzes the lab results based on normal range and then flags or categorizes whether it is low, normal or high.</p>
+<p>We will focus on how to create such a laboratory shift table in a step-wise explanation.</p>
+</section>
+</section>
+<section id="required-packages-and-programs" class="level2">
+<h2 class="anchored" data-anchor-id="required-packages-and-programs">Required Packages and Programs</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(dplyr))</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(tidyr))</span>
@@ -166,98 +202,206 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(purrr))</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(stringr))</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">walk</span>(<span class="fu">list.files</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>), <span class="at">pattern =</span> <span class="st">".R"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>), source)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> pharmaverseadam<span class="sc">::</span>adsl <span class="sc">|&gt;</span> <span class="fu">na_to_missing</span>()</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>adlb <span class="ot">&lt;-</span> pharmaverseadam<span class="sc">::</span>adlb <span class="sc">|&gt;</span> <span class="fu">na_to_missing</span>()</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>adlb <span class="ot">&lt;-</span> adlb <span class="sc">|&gt;</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">modify_at</span>(</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"BNRIND"</span>, <span class="st">"ANRIND"</span>),</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    \(x) <span class="fu">case_match</span>(</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>      x,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">"H"</span> <span class="sc">~</span> <span class="st">"High"</span>,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>      <span class="st">"L"</span> <span class="sc">~</span> <span class="st">"Low"</span>,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>      <span class="st">"N"</span> <span class="sc">~</span> <span class="st">"Normal"</span>,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">.default =</span> <span class="fu">str_to_title</span>(x)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>adsl_bign <span class="ot">&lt;-</span> <span class="fu">select</span>(adsl, <span class="fu">all_of</span>(<span class="fu">c</span>(<span class="st">"USUBJID"</span>, <span class="st">"TRT01A"</span>))) <span class="sc">|&gt;</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_count</span>(.data<span class="sc">$</span>TRT01A, <span class="at">name =</span> <span class="st">"TRT_N"</span>)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># add `N` to the BDS dataset</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>bds_df <span class="ot">&lt;-</span> adlb <span class="sc">|&gt;</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(.data<span class="sc">$</span>AVAL), .data<span class="sc">$</span>BNRIND <span class="sc">!=</span> <span class="st">"&lt;Missing&gt;"</span>, .data<span class="sc">$</span>ANRIND <span class="sc">!=</span> <span class="st">"&lt;Missing&gt;"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(adsl_bign) <span class="sc">|&gt;</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">trt_var =</span> <span class="fu">paste0</span>(.data<span class="sc">$</span>TRT01A, <span class="st">"&lt;br&gt;(N="</span>, TRT_N, <span class="st">")"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>TRT_N) <span class="sc">|&gt;</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter_if</span>(<span class="fu">expr</span>(PARCAT1 <span class="sc">==</span> <span class="st">"URINALYSIS"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">walk</span>(<span class="fu">list.files</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R"</span>), <span class="at">pattern =</span> <span class="st">".R"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>), source)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data-used-to-produce-shift-table" class="level2">
+<h2 class="anchored" data-anchor-id="data-used-to-produce-shift-table">Data used to produce Shift Table</h2>
+<p>The following ADSL and ADLB ADaM datasets from `{pharmaverseadam} R package are used in creation of shift table and help with understanding the programming process.</p>
+<p><b>ADSL</b></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> pharmaverseadam<span class="sc">::</span>adsl</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">slice_head</span>(adsl, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 54
+   STUDYID     USUBJID SUBJID RFSTDTC RFENDTC RFXSTDTC RFXENDTC RFICDTC RFPENDTC
+   &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;   
+ 1 CDISCPILOT… 01-701… 1015   2014-0… 2014-0… 2014-01… 2014-07… &lt;NA&gt;    2014-07…
+ 2 CDISCPILOT… 01-701… 1023   2012-0… 2012-0… 2012-08… 2012-09… &lt;NA&gt;    2013-02…
+ 3 CDISCPILOT… 01-701… 1028   2013-0… 2014-0… 2013-07… 2014-01… &lt;NA&gt;    2014-01…
+ 4 CDISCPILOT… 01-701… 1033   2014-0… 2014-0… 2014-03… 2014-03… &lt;NA&gt;    2014-09…
+ 5 CDISCPILOT… 01-701… 1034   2014-0… 2014-1… 2014-07… 2014-12… &lt;NA&gt;    2014-12…
+ 6 CDISCPILOT… 01-701… 1047   2013-0… 2013-0… 2013-02… 2013-03… &lt;NA&gt;    2013-07…
+ 7 CDISCPILOT… 01-701… 1057   &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt;    2013-12…
+ 8 CDISCPILOT… 01-701… 1097   2014-0… 2014-0… 2014-01… 2014-07… &lt;NA&gt;    2014-07…
+ 9 CDISCPILOT… 01-701… 1111   2012-0… 2012-0… 2012-09… 2012-09… &lt;NA&gt;    2013-02…
+10 CDISCPILOT… 01-701… 1115   2012-1… 2013-0… 2012-11… 2013-01… &lt;NA&gt;    2013-05…
+# ℹ 45 more variables: DTHDTC &lt;chr&gt;, DTHFL &lt;chr&gt;, SITEID &lt;chr&gt;, AGE &lt;dbl&gt;,
+#   AGEU &lt;chr&gt;, SEX &lt;chr&gt;, RACE &lt;chr&gt;, ETHNIC &lt;chr&gt;, ARMCD &lt;chr&gt;, ARM &lt;chr&gt;,
+#   ACTARMCD &lt;chr&gt;, ACTARM &lt;chr&gt;, COUNTRY &lt;chr&gt;, DMDTC &lt;chr&gt;, DMDY &lt;dbl&gt;,
+#   TRT01P &lt;chr&gt;, TRT01A &lt;chr&gt;, TRTSDTM &lt;dttm&gt;, TRTSTMF &lt;chr&gt;, TRTEDTM &lt;dttm&gt;,
+#   TRTETMF &lt;chr&gt;, TRTSDT &lt;date&gt;, TRTEDT &lt;date&gt;, TRTDURD &lt;dbl&gt;, SCRFDT &lt;date&gt;,
+#   EOSDT &lt;date&gt;, EOSSTT &lt;chr&gt;, FRVDT &lt;date&gt;, RANDDT &lt;date&gt;, DTHDT &lt;date&gt;,
+#   DTHDTF &lt;chr&gt;, DTHADY &lt;dbl&gt;, LDDTHELD &lt;dbl&gt;, DTHCAUS &lt;chr&gt;, DTHDOM &lt;chr&gt;, …</code></pre>
+</div>
+</div>
+<p><b>ADLB</b></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>adlb <span class="ot">&lt;-</span> pharmaverseadam<span class="sc">::</span>adlb</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">slice_head</span>(adlb, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 111
+   STUDYID  DOMAIN USUBJID LBSEQ LBTESTCD LBTEST LBCAT LBORRES LBORRESU LBORNRLO
+   &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;   
+ 1 CDISCPI… LB     01-701…     1 ALB      Album… CHEM… 3.8     g/dL     3.3     
+ 2 CDISCPI… LB     01-701…    39 ALB      Album… CHEM… 3.9     g/dL     3.3     
+ 3 CDISCPI… LB     01-701…    39 ALB      Album… CHEM… 3.9     g/dL     3.3     
+ 4 CDISCPI… LB     01-701…    74 ALB      Album… CHEM… 3.8     g/dL     3.3     
+ 5 CDISCPI… LB     01-701…   104 ALB      Album… CHEM… 3.7     g/dL     3.3     
+ 6 CDISCPI… LB     01-701…   104 ALB      Album… CHEM… 3.7     g/dL     3.3     
+ 7 CDISCPI… LB     01-701…   134 ALB      Album… CHEM… 3.8     g/dL     3.3     
+ 8 CDISCPI… LB     01-701…   164 ALB      Album… CHEM… 3.8     g/dL     3.3     
+ 9 CDISCPI… LB     01-701…   199 ALB      Album… CHEM… 3.7     g/dL     3.3     
+10 CDISCPI… LB     01-701…   229 ALB      Album… CHEM… 3.7     g/dL     3.3     
+# ℹ 101 more variables: LBORNRHI &lt;chr&gt;, LBSTRESC &lt;chr&gt;, LBSTRESN &lt;dbl&gt;,
+#   LBSTRESU &lt;chr&gt;, LBSTNRLO &lt;dbl&gt;, LBSTNRHI &lt;dbl&gt;, LBNRIND &lt;chr&gt;,
+#   LBBLFL &lt;chr&gt;, VISITNUM &lt;dbl&gt;, VISIT &lt;chr&gt;, VISITDY &lt;dbl&gt;, LBDTC &lt;chr&gt;,
+#   LBDY &lt;dbl&gt;, TRTSDT &lt;date&gt;, TRTEDT &lt;date&gt;, TRT01A &lt;chr&gt;, TRT01P &lt;chr&gt;,
+#   ADT &lt;date&gt;, ADY &lt;dbl&gt;, PARAMCD &lt;chr&gt;, PARAM &lt;chr&gt;, PARAMN &lt;dbl&gt;,
+#   PARCAT1 &lt;chr&gt;, AVAL &lt;dbl&gt;, AVALC &lt;chr&gt;, ANRLO &lt;dbl&gt;, ANRHI &lt;dbl&gt;,
+#   DTYPE &lt;chr&gt;, AVISIT &lt;chr&gt;, AVISITN &lt;dbl&gt;, ONTRTFL &lt;chr&gt;, ANRIND &lt;chr&gt;, …</code></pre>
+</div>
+</div>
+</section>
+<section id="steps-to-create-a-shift-table" class="level2">
+<h2 class="anchored" data-anchor-id="steps-to-create-a-shift-table">Steps to create a Shift Table</h2>
+<section id="calculating-big-n" class="level3">
+<h3 class="anchored" data-anchor-id="calculating-big-n">1. Calculating BIG N</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>adsl_bign <span class="ot">&lt;-</span> <span class="fu">select</span>(<span class="fu">na_to_missing</span>(adsl), <span class="fu">all_of</span>(<span class="fu">c</span>(<span class="st">"USUBJID"</span>, <span class="st">"TRT01A"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_count</span>(.data<span class="sc">$</span>TRT01A, <span class="at">name =</span> <span class="st">"TRT_N"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>adsl_bign</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 306 × 3
+   USUBJID     TRT01A               TRT_N
+   &lt;chr&gt;       &lt;chr&gt;                &lt;int&gt;
+ 1 01-701-1015 Placebo                 86
+ 2 01-701-1023 Placebo                 86
+ 3 01-701-1028 Xanomeline High Dose    72
+ 4 01-701-1033 Xanomeline Low Dose     96
+ 5 01-701-1034 Xanomeline High Dose    72
+ 6 01-701-1047 Placebo                 86
+ 7 01-701-1057 Screen Failure          52
+ 8 01-701-1097 Xanomeline Low Dose     96
+ 9 01-701-1111 Xanomeline Low Dose     96
+10 01-701-1115 Xanomeline Low Dose     96
+# ℹ 296 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="pre-process-lab-data" class="level3">
+<h3 class="anchored" data-anchor-id="pre-process-lab-data">2. Pre-process Lab data</h3>
+<ul>
+<li>Get rid of missing <code>BNRIND, ANRIND, AVAL, VISITDY</code></li>
+<li>Add <code>BIG N</code> to <code>adlb</code></li>
+<li>Keeping only <b>Alkaline Phosphatase</b> records across <b>Week 6-Week 24</b> Visits (<code>AVISIT</code>)</li>
+<li>Concatenating <code>BIG N</code> with Treatment Labels in <code>trt_var</code></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>adlb_prep <span class="ot">&lt;-</span> adlb <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na_to_missing</span>() <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(<span class="fu">c</span>(<span class="st">"BNRIND"</span>, <span class="st">"ANRIND"</span>)), str_to_title)) <span class="sc">|&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(adsl_bign) <span class="sc">|&gt;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(.data<span class="sc">$</span>AVAL), .data<span class="sc">$</span>BNRIND <span class="sc">!=</span> <span class="st">"&lt;Missing&gt;"</span>, .data<span class="sc">$</span>ANRIND <span class="sc">!=</span> <span class="st">"&lt;Missing&gt;"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(.data<span class="sc">$</span>VISITDY), .data<span class="sc">$</span>PARAMCD <span class="sc">==</span> <span class="st">"ALKPH"</span>, <span class="fu">between</span>(.data<span class="sc">$</span>AVISITN, <span class="dv">7</span>, <span class="dv">24</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">trt_var =</span> <span class="fu">paste0</span>(.data<span class="sc">$</span>TRT01A, <span class="st">"&lt;br&gt;(N="</span>, TRT_N, <span class="st">")"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>TRT_N)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Joining with `by = join_by(USUBJID, TRT01A)`</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>tab_spanners <span class="ot">&lt;-</span> <span class="fu">unique</span>(bds_df<span class="sc">$</span>trt_var)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>denom <span class="ot">&lt;-</span> <span class="fu">get_N_from_labels</span>(tab_spanners, <span class="st">"N="</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>adlb_prep</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,060 × 112
+   STUDYID  DOMAIN USUBJID LBSEQ LBTESTCD LBTEST LBCAT LBORRES LBORRESU LBORNRLO
+   &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;   
+ 1 CDISCPI… LB     01-701…   105 ALP      Alkal… CHEM… 43      U/L      35      
+ 2 CDISCPI… LB     01-701…   135 ALP      Alkal… CHEM… 47      U/L      35      
+ 3 CDISCPI… LB     01-701…   165 ALP      Alkal… CHEM… 53      U/L      35      
+ 4 CDISCPI… LB     01-701…   200 ALP      Alkal… CHEM… 41      U/L      35      
+ 5 CDISCPI… LB     01-701…   230 ALP      Alkal… CHEM… 45      U/L      35      
+ 6 CDISCPI… LB     01-701…   260 ALP      Alkal… CHEM… 46      U/L      35      
+ 7 CDISCPI… LB     01-701…   295 ALP      Alkal… CHEM… 44      U/L      35      
+ 8 CDISCPI… LB     01-701…   104 ALP      Alkal… CHEM… 40      U/L      35      
+ 9 CDISCPI… LB     01-701…   134 ALP      Alkal… CHEM… 40      U/L      35      
+10 CDISCPI… LB     01-701…   164 ALP      Alkal… CHEM… 41      U/L      35      
+# ℹ 1,050 more rows
+# ℹ 102 more variables: LBORNRHI &lt;chr&gt;, LBSTRESC &lt;chr&gt;, LBSTRESN &lt;dbl&gt;,
+#   LBSTRESU &lt;chr&gt;, LBSTNRLO &lt;dbl&gt;, LBSTNRHI &lt;dbl&gt;, LBNRIND &lt;chr&gt;,
+#   LBBLFL &lt;chr&gt;, VISITNUM &lt;dbl&gt;, VISIT &lt;chr&gt;, VISITDY &lt;dbl&gt;, LBDTC &lt;chr&gt;,
+#   LBDY &lt;dbl&gt;, TRTSDT &lt;date&gt;, TRTEDT &lt;date&gt;, TRT01A &lt;chr&gt;, TRT01P &lt;chr&gt;,
+#   ADT &lt;date&gt;, ADY &lt;dbl&gt;, PARAMCD &lt;chr&gt;, PARAM &lt;chr&gt;, PARAMN &lt;dbl&gt;,
+#   PARCAT1 &lt;chr&gt;, AVAL &lt;dbl&gt;, AVALC &lt;chr&gt;, ANRLO &lt;dbl&gt;, ANRHI &lt;dbl&gt;, …</code></pre>
+</div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>rep <span class="ot">&lt;-</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">build_shift_table</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">bds_dataset =</span> bds_df,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">trt_var =</span> <span class="fu">exprs</span>(trt_var),</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">analysis_grade_var =</span> <span class="fu">exprs</span>(ANRIND),</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">base_grade_var =</span> <span class="fu">exprs</span>(BNRIND),</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">grade_var_order =</span> <span class="fu">exprs</span>(Low, Normal, High)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>rep <span class="sc">|&gt;</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>(<span class="at">groupname_col =</span> <span class="st">"PARAM"</span>, <span class="at">row_group_as_column =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label</span>(<span class="at">BNRIND =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"Reference Range&lt;br&gt;Indicator"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label_with</span>(<span class="at">columns =</span> <span class="fu">contains</span>(<span class="st">"&lt;-&gt;"</span>), \(x) <span class="fu">custom_split</span>(x, <span class="st">"&lt;-&gt;"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_spanner</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">1</span>]), <span class="at">label =</span> gt<span class="sc">::</span><span class="fu">md</span>(tab_spanners[<span class="dv">1</span>])) <span class="sc">|&gt;</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_spanner</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">2</span>]), <span class="at">label =</span> gt<span class="sc">::</span><span class="fu">md</span>(tab_spanners[<span class="dv">2</span>])) <span class="sc">|&gt;</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_spanner</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">3</span>]), <span class="at">label =</span> gt<span class="sc">::</span><span class="fu">md</span>(tab_spanners[<span class="dv">3</span>])) <span class="sc">|&gt;</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">data_color</span>(<span class="at">method =</span> <span class="st">"numeric"</span>, <span class="at">palette =</span> <span class="fu">gt_pal</span>(), <span class="at">columns =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">11</span>, <span class="dv">13</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">text_transform</span>(</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">fn =</span> \(x) <span class="fu">add_pct</span>(x, denom[<span class="dv">1</span>], <span class="dv">2</span>),</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_body</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">1</span>]))</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">text_transform</span>(</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">fn =</span> \(x) <span class="fu">add_pct</span>(x, denom[<span class="dv">2</span>], <span class="dv">2</span>),</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_body</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">2</span>]))</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">text_transform</span>(</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">fn =</span> \(x) <span class="fu">add_pct</span>(x, denom[<span class="dv">3</span>], <span class="dv">2</span>),</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_body</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">3</span>]))</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_stubhead</span>(<span class="at">label =</span> <span class="st">"Parameter"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_source_note</span>(<span class="at">source_note =</span> <span class="st">"This is a source note."</span>) <span class="sc">|&gt;</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_footnote</span>(</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"This is a footnote."</span>,</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_body</span>(<span class="at">columns =</span> <span class="dv">1</span>, <span class="at">rows =</span> <span class="dv">1</span>)</span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_header</span>(</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"The title of the table"</span>,</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"The table's subtitle"</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">opt_table_lines</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>tab_spanners <span class="ot">&lt;-</span> <span class="fu">unique</span>(adlb_prep<span class="sc">$</span>trt_var)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>m_tab_spanners <span class="ot">&lt;-</span> <span class="fu">paste0</span>(tab_spanners, <span class="st">"&lt;br&gt;Baseline&lt;br&gt;n (%)"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>N_Placebo <span class="ot">&lt;-</span> <span class="fu">get_trt_N</span>(adsl_bign, <span class="st">"TRT01A"</span>, <span class="st">"Placebo"</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>N_Xano_High <span class="ot">&lt;-</span> <span class="fu">get_trt_N</span>(adsl_bign, <span class="st">"TRT01A"</span>, <span class="st">"Xanomeline High Dose"</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>N_Xano_Low <span class="ot">&lt;-</span> <span class="fu">get_trt_N</span>(adsl_bign, <span class="st">"TRT01A"</span>, <span class="st">"Xanomeline Low Dose"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>rep <span class="ot">&lt;-</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">build_shift_table</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">bds_dataset =</span> adlb_prep,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">trt_var =</span> <span class="fu">exprs</span>(trt_var),</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">analysis_grade_var =</span> <span class="fu">exprs</span>(ANRIND),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">base_grade_var =</span> <span class="fu">exprs</span>(BNRIND),</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">grade_var_order =</span> <span class="fu">exprs</span>(Low, Normal, High)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>rep <span class="sc">|&gt;</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">gt</span>(<span class="at">groupname_col =</span> <span class="st">"AVISIT"</span>, <span class="at">row_group_as_column =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label</span>(<span class="at">ANRIND =</span> gt<span class="sc">::</span><span class="fu">md</span>(<span class="st">"Post&lt;br&gt;Baseline"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">cols_label_with</span>(<span class="at">columns =</span> <span class="fu">contains</span>(<span class="st">"&lt;-&gt;"</span>), \(x) <span class="fu">custom_split</span>(x, <span class="st">"&lt;-&gt;"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_spanner</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">1</span>]), <span class="at">label =</span> gt<span class="sc">::</span><span class="fu">md</span>(m_tab_spanners[<span class="dv">1</span>])) <span class="sc">|&gt;</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_spanner</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">2</span>]), <span class="at">label =</span> gt<span class="sc">::</span><span class="fu">md</span>(m_tab_spanners[<span class="dv">2</span>])) <span class="sc">|&gt;</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_spanner</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">3</span>]), <span class="at">label =</span> gt<span class="sc">::</span><span class="fu">md</span>(m_tab_spanners[<span class="dv">3</span>])) <span class="sc">|&gt;</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">data_color</span>(<span class="at">method =</span> <span class="st">"numeric"</span>, <span class="at">palette =</span> <span class="fu">gt_pal</span>(), <span class="at">columns =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">11</span>, <span class="dv">13</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">text_transform</span>(</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">fn =</span> \(x) <span class="fu">add_pct</span>(x, N_Placebo, <span class="dv">2</span>),</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_body</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">1</span>]))</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">text_transform</span>(</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">fn =</span> \(x) <span class="fu">add_pct</span>(x, N_Xano_High, <span class="dv">2</span>),</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_body</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">2</span>]))</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">text_transform</span>(</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">fn =</span> \(x) <span class="fu">add_pct</span>(x, N_Xano_Low, <span class="dv">2</span>),</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_body</span>(<span class="at">columns =</span> <span class="fu">contains</span>(tab_spanners[<span class="dv">3</span>]))</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>  <span class="co">#gt::tab_stubhead(label = gt::md("Analysis&lt;br&gt;Visit")) |&gt;</span></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_source_note</span>(<span class="at">source_note =</span> <span class="st">"This is a source note."</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_footnote</span>(</span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">footnote =</span> <span class="st">"This is a footnote."</span>,</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">locations =</span> gt<span class="sc">::</span><span class="fu">cells_body</span>(<span class="at">columns =</span> <span class="dv">1</span>, <span class="at">rows =</span> <span class="dv">1</span>)</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">tab_header</span>(</span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"The title of the table"</span>,</span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"The table's subtitle"</span></span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>  gt<span class="sc">::</span><span class="fu">opt_table_lines</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
-<div id="gpeaiaxelr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#gpeaiaxelr table {
+<div id="zqnyuxnjun" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#zqnyuxnjun table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#gpeaiaxelr thead, #gpeaiaxelr tbody, #gpeaiaxelr tfoot, #gpeaiaxelr tr, #gpeaiaxelr td, #gpeaiaxelr th {
+#zqnyuxnjun thead, #zqnyuxnjun tbody, #zqnyuxnjun tfoot, #zqnyuxnjun tr, #zqnyuxnjun td, #zqnyuxnjun th {
   border-style: none;
 }
 
-#gpeaiaxelr p {
+#zqnyuxnjun p {
   margin: 0;
   padding: 0;
 }
 
-#gpeaiaxelr .gt_table {
+#zqnyuxnjun .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -283,12 +427,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-left-color: #D3D3D3;
 }
 
-#gpeaiaxelr .gt_caption {
+#zqnyuxnjun .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#gpeaiaxelr .gt_title {
+#zqnyuxnjun .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -300,7 +444,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-width: 0;
 }
 
-#gpeaiaxelr .gt_subtitle {
+#zqnyuxnjun .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -312,7 +456,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-width: 0;
 }
 
-#gpeaiaxelr .gt_heading {
+#zqnyuxnjun .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -324,13 +468,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#gpeaiaxelr .gt_bottom_border {
+#zqnyuxnjun .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#gpeaiaxelr .gt_col_headings {
+#zqnyuxnjun .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -345,7 +489,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#gpeaiaxelr .gt_col_heading {
+#zqnyuxnjun .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -365,7 +509,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#gpeaiaxelr .gt_column_spanner_outer {
+#zqnyuxnjun .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -377,15 +521,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 4px;
 }
 
-#gpeaiaxelr .gt_column_spanner_outer:first-child {
+#zqnyuxnjun .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#gpeaiaxelr .gt_column_spanner_outer:last-child {
+#zqnyuxnjun .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#gpeaiaxelr .gt_column_spanner {
+#zqnyuxnjun .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -397,11 +541,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   width: 100%;
 }
 
-#gpeaiaxelr .gt_spanner_row {
+#zqnyuxnjun .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#gpeaiaxelr .gt_group_heading {
+#zqnyuxnjun .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -427,7 +571,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-align: left;
 }
 
-#gpeaiaxelr .gt_empty_group_heading {
+#zqnyuxnjun .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -442,15 +586,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: middle;
 }
 
-#gpeaiaxelr .gt_from_md > :first-child {
+#zqnyuxnjun .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#gpeaiaxelr .gt_from_md > :last-child {
+#zqnyuxnjun .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#gpeaiaxelr .gt_row {
+#zqnyuxnjun .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -469,7 +613,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#gpeaiaxelr .gt_stub {
+#zqnyuxnjun .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -482,7 +626,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#gpeaiaxelr .gt_stub_row_group {
+#zqnyuxnjun .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -496,15 +640,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: top;
 }
 
-#gpeaiaxelr .gt_row_group_first td {
+#zqnyuxnjun .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#gpeaiaxelr .gt_row_group_first th {
+#zqnyuxnjun .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#gpeaiaxelr .gt_summary_row {
+#zqnyuxnjun .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -514,16 +658,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#gpeaiaxelr .gt_first_summary_row {
+#zqnyuxnjun .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#gpeaiaxelr .gt_first_summary_row.thick {
+#zqnyuxnjun .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#gpeaiaxelr .gt_last_summary_row {
+#zqnyuxnjun .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -533,7 +677,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#gpeaiaxelr .gt_grand_summary_row {
+#zqnyuxnjun .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -543,7 +687,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#gpeaiaxelr .gt_first_grand_summary_row {
+#zqnyuxnjun .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -553,7 +697,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-color: #D3D3D3;
 }
 
-#gpeaiaxelr .gt_last_grand_summary_row_top {
+#zqnyuxnjun .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -563,11 +707,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#gpeaiaxelr .gt_striped {
+#zqnyuxnjun .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#gpeaiaxelr .gt_table_body {
+#zqnyuxnjun .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -576,7 +720,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#gpeaiaxelr .gt_footnotes {
+#zqnyuxnjun .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: solid;
@@ -590,7 +734,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#gpeaiaxelr .gt_footnote {
+#zqnyuxnjun .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -599,7 +743,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#gpeaiaxelr .gt_sourcenotes {
+#zqnyuxnjun .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: solid;
@@ -613,7 +757,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#gpeaiaxelr .gt_sourcenote {
+#zqnyuxnjun .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -621,63 +765,63 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#gpeaiaxelr .gt_left {
+#zqnyuxnjun .gt_left {
   text-align: left;
 }
 
-#gpeaiaxelr .gt_center {
+#zqnyuxnjun .gt_center {
   text-align: center;
 }
 
-#gpeaiaxelr .gt_right {
+#zqnyuxnjun .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#gpeaiaxelr .gt_font_normal {
+#zqnyuxnjun .gt_font_normal {
   font-weight: normal;
 }
 
-#gpeaiaxelr .gt_font_bold {
+#zqnyuxnjun .gt_font_bold {
   font-weight: bold;
 }
 
-#gpeaiaxelr .gt_font_italic {
+#zqnyuxnjun .gt_font_italic {
   font-style: italic;
 }
 
-#gpeaiaxelr .gt_super {
+#zqnyuxnjun .gt_super {
   font-size: 65%;
 }
 
-#gpeaiaxelr .gt_footnote_marks {
+#zqnyuxnjun .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#gpeaiaxelr .gt_asterisk {
+#zqnyuxnjun .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#gpeaiaxelr .gt_indent_1 {
+#zqnyuxnjun .gt_indent_1 {
   text-indent: 5px;
 }
 
-#gpeaiaxelr .gt_indent_2 {
+#zqnyuxnjun .gt_indent_2 {
   text-indent: 10px;
 }
 
-#gpeaiaxelr .gt_indent_3 {
+#zqnyuxnjun .gt_indent_3 {
   text-indent: 15px;
 }
 
-#gpeaiaxelr .gt_indent_4 {
+#zqnyuxnjun .gt_indent_4 {
   text-indent: 20px;
 }
 
-#gpeaiaxelr .gt_indent_5 {
+#zqnyuxnjun .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -690,16 +834,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <td colspan="14" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style="">The table's subtitle</td>
     </tr>
     <tr class="gt_col_headings gt_spanner_row">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col" id="Parameter">Parameter</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col" id="Reference Range<br>Indicator">Reference Range<br>Indicator</th>
-      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="4" scope="colgroup" id="Placebo<br>(N=86)">
-        <span class="gt_column_spanner">Placebo<br>(N=86)</span>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col" id=""></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col" id="Post<br>Baseline">Post<br>Baseline</th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="4" scope="colgroup" id="Placebo<br>(N=86)<br>Baseline<br>n (%)">
+        <span class="gt_column_spanner">Placebo<br>(N=86)<br>Baseline<br>n (%)</span>
       </th>
-      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="4" scope="colgroup" id="Xanomeline High Dose<br>(N=72)">
-        <span class="gt_column_spanner">Xanomeline High Dose<br>(N=72)</span>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="4" scope="colgroup" id="Xanomeline High Dose<br>(N=72)<br>Baseline<br>n (%)">
+        <span class="gt_column_spanner">Xanomeline High Dose<br>(N=72)<br>Baseline<br>n (%)</span>
       </th>
-      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="4" scope="colgroup" id="Xanomeline Low Dose<br>(N=96)">
-        <span class="gt_column_spanner">Xanomeline Low Dose<br>(N=96)</span>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="4" scope="colgroup" id="Xanomeline Low Dose<br>(N=96)<br>Baseline<br>n (%)">
+        <span class="gt_column_spanner">Xanomeline Low Dose<br>(N=96)<br>Baseline<br>n (%)</span>
       </th>
     </tr>
     <tr class="gt_col_headings">
@@ -718,112 +862,377 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr class="gt_row_group_first"><td headers="Specific Gravity stub_1_1 stub_1" rowspan="4" class="gt_row gt_left gt_stub_row_group">Specific Gravity</td>
-<td headers="Specific Gravity stub_1_1 BNRIND" class="gt_row gt_left">Low</td>
-<td headers="Specific Gravity stub_1_1 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity stub_1_1 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">1 (1.16%)</td>
-<td headers="Specific Gravity stub_1_1 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity stub_1_1 Placebo<br>(N=86)<->Total" class="gt_row gt_right">1 (1.16%)</td>
-<td headers="Specific Gravity stub_1_1 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity stub_1_1 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">2 (2.78%)</td>
-<td headers="Specific Gravity stub_1_1 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity stub_1_1 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">2 (2.78%)</td>
-<td headers="Specific Gravity stub_1_1 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity stub_1_1 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">2 (2.08%)</td>
-<td headers="Specific Gravity stub_1_1 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity stub_1_1 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">2 (2.08%)</td></tr>
-    <tr><td headers="Specific Gravity BNRIND_2 BNRIND" class="gt_row gt_left">Normal</td>
-<td headers="Specific Gravity BNRIND_2 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity BNRIND_2 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">78 (90.7%)</td>
-<td headers="Specific Gravity BNRIND_2 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">3 (3.49%)</td>
-<td headers="Specific Gravity BNRIND_2 Placebo<br>(N=86)<->Total" class="gt_row gt_right">81 (94.19%)</td>
-<td headers="Specific Gravity BNRIND_2 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity BNRIND_2 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">65 (90.28%)</td>
-<td headers="Specific Gravity BNRIND_2 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FDB397; color: #000000;">2 (2.78%)</td>
-<td headers="Specific Gravity BNRIND_2 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">67 (93.06%)</td>
-<td headers="Specific Gravity BNRIND_2 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity BNRIND_2 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">87 (90.62%)</td>
-<td headers="Specific Gravity BNRIND_2 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #D72522; color: #FFFFFF;">5 (5.21%)</td>
-<td headers="Specific Gravity BNRIND_2 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">92 (95.83%)</td></tr>
-    <tr><td headers="Specific Gravity BNRIND_3 BNRIND" class="gt_row gt_left">High</td>
-<td headers="Specific Gravity BNRIND_3 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity BNRIND_3 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">0 (0%)</td>
-<td headers="Specific Gravity BNRIND_3 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">3 (3.49%)</td>
-<td headers="Specific Gravity BNRIND_3 Placebo<br>(N=86)<->Total" class="gt_row gt_right">3 (3.49%)</td>
-<td headers="Specific Gravity BNRIND_3 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity BNRIND_3 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">0 (0%)</td>
-<td headers="Specific Gravity BNRIND_3 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FC7252; color: #FFFFFF;">3 (4.17%)</td>
-<td headers="Specific Gravity BNRIND_3 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">3 (4.17%)</td>
-<td headers="Specific Gravity BNRIND_3 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity BNRIND_3 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
-<td headers="Specific Gravity BNRIND_3 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFEEE6; color: #000000;">1 (1.04%)</td>
-<td headers="Specific Gravity BNRIND_3 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">1 (1.04%)</td></tr>
-    <tr><td headers="Specific Gravity BNRIND_4 BNRIND" class="gt_row gt_left">Total</td>
-<td headers="Specific Gravity BNRIND_4 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity BNRIND_4 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">79 (91.86%)</td>
-<td headers="Specific Gravity BNRIND_4 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">6 (6.98%)</td>
-<td headers="Specific Gravity BNRIND_4 Placebo<br>(N=86)<->Total" class="gt_row gt_right">85 (98.84%)</td>
-<td headers="Specific Gravity BNRIND_4 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity BNRIND_4 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">67 (93.06%)</td>
-<td headers="Specific Gravity BNRIND_4 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">5 (6.94%)</td>
-<td headers="Specific Gravity BNRIND_4 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">72 (100%)</td>
-<td headers="Specific Gravity BNRIND_4 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="Specific Gravity BNRIND_4 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">89 (92.71%)</td>
-<td headers="Specific Gravity BNRIND_4 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">6 (6.25%)</td>
-<td headers="Specific Gravity BNRIND_4 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">95 (98.96%)</td></tr>
-    <tr class="gt_row_group_first"><td headers="pH stub_1_5 stub_1" rowspan="4" class="gt_row gt_left gt_stub_row_group">pH</td>
-<td headers="pH stub_1_5 BNRIND" class="gt_row gt_left">Low</td>
-<td headers="pH stub_1_5 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="pH stub_1_5 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">0 (0%)</td>
-<td headers="pH stub_1_5 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="pH stub_1_5 Placebo<br>(N=86)<->Total" class="gt_row gt_right">0 (0%)</td>
-<td headers="pH stub_1_5 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="pH stub_1_5 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">0 (0%)</td>
-<td headers="pH stub_1_5 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="pH stub_1_5 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">0 (0%)</td>
-<td headers="pH stub_1_5 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="pH stub_1_5 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
-<td headers="pH stub_1_5 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="pH stub_1_5 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">0 (0%)</td></tr>
-    <tr><td headers="pH BNRIND_6 BNRIND" class="gt_row gt_left">Normal</td>
-<td headers="pH BNRIND_6 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_6 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">85 (98.84%)</td>
-<td headers="pH BNRIND_6 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_6 Placebo<br>(N=86)<->Total" class="gt_row gt_right">85 (98.84%)</td>
-<td headers="pH BNRIND_6 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_6 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">72 (100%)</td>
-<td headers="pH BNRIND_6 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_6 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">72 (100%)</td>
-<td headers="pH BNRIND_6 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_6 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">95 (98.96%)</td>
-<td headers="pH BNRIND_6 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_6 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">95 (98.96%)</td></tr>
-    <tr><td headers="pH BNRIND_7 BNRIND" class="gt_row gt_left">High</td>
-<td headers="pH BNRIND_7 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_7 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">0 (0%)</td>
-<td headers="pH BNRIND_7 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_7 Placebo<br>(N=86)<->Total" class="gt_row gt_right">0 (0%)</td>
-<td headers="pH BNRIND_7 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_7 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">0 (0%)</td>
-<td headers="pH BNRIND_7 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_7 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">0 (0%)</td>
-<td headers="pH BNRIND_7 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_7 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
-<td headers="pH BNRIND_7 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_7 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">0 (0%)</td></tr>
-    <tr><td headers="pH BNRIND_8 BNRIND" class="gt_row gt_left">Total</td>
-<td headers="pH BNRIND_8 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_8 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">85 (98.84%)</td>
-<td headers="pH BNRIND_8 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_8 Placebo<br>(N=86)<->Total" class="gt_row gt_right">85 (98.84%)</td>
-<td headers="pH BNRIND_8 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_8 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">72 (100%)</td>
-<td headers="pH BNRIND_8 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_8 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">72 (100%)</td>
-<td headers="pH BNRIND_8 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_8 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">95 (98.96%)</td>
-<td headers="pH BNRIND_8 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
-<td headers="pH BNRIND_8 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">95 (98.96%)</td></tr>
+    <tr class="gt_row_group_first"><td headers="Week 6 stub_1_1 stub_1" rowspan="4" class="gt_row gt_left gt_stub_row_group">Week 6</td>
+<td headers="Week 6 stub_1_1 ANRIND" class="gt_row gt_left">Low</td>
+<td headers="Week 6 stub_1_1 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #EF3B2C; color: #FFFFFF;">3 (3.49%)</td>
+<td headers="Week 6 stub_1_1 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 6 stub_1_1 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 6 stub_1_1 Placebo<br>(N=86)<->Total" class="gt_row gt_right">3 (3.49%)</td>
+<td headers="Week 6 stub_1_1 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.39%)</td>
+<td headers="Week 6 stub_1_1 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">2 (2.78%)</td>
+<td headers="Week 6 stub_1_1 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 6 stub_1_1 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">3 (4.17%)</td>
+<td headers="Week 6 stub_1_1 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.04%)</td>
+<td headers="Week 6 stub_1_1 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 6 stub_1_1 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 6 stub_1_1 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">1 (1.04%)</td></tr>
+    <tr><td headers="Week 6 ANRIND_2 ANRIND" class="gt_row gt_left">Normal</td>
+<td headers="Week 6 ANRIND_2 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FEE0D2; color: #000000;">1 (1.16%)</td>
+<td headers="Week 6 ANRIND_2 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">68 (79.07%)</td>
+<td headers="Week 6 ANRIND_2 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FDC7B1; color: #000000;">1 (1.16%)</td>
+<td headers="Week 6 ANRIND_2 Placebo<br>(N=86)<->Total" class="gt_row gt_right">70 (81.4%)</td>
+<td headers="Week 6 ANRIND_2 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 6 ANRIND_2 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">61 (84.72%)</td>
+<td headers="Week 6 ANRIND_2 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 6 ANRIND_2 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">61 (84.72%)</td>
+<td headers="Week 6 ANRIND_2 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 6 ANRIND_2 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">59 (61.46%)</td>
+<td headers="Week 6 ANRIND_2 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 6 ANRIND_2 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">59 (61.46%)</td></tr>
+    <tr><td headers="Week 6 ANRIND_3 ANRIND" class="gt_row gt_left">High</td>
+<td headers="Week 6 ANRIND_3 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 6 ANRIND_3 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 6 ANRIND_3 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #F75C40; color: #FFFFFF;">2 (2.33%)</td>
+<td headers="Week 6 ANRIND_3 Placebo<br>(N=86)<->Total" class="gt_row gt_right">2 (2.33%)</td>
+<td headers="Week 6 ANRIND_3 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 6 ANRIND_3 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">2 (2.78%)</td>
+<td headers="Week 6 ANRIND_3 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.39%)</td>
+<td headers="Week 6 ANRIND_3 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">3 (4.17%)</td>
+<td headers="Week 6 ANRIND_3 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 6 ANRIND_3 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">2 (2.08%)</td>
+<td headers="Week 6 ANRIND_3 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">2 (2.08%)</td>
+<td headers="Week 6 ANRIND_3 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">4 (4.17%)</td></tr>
+    <tr><td headers="Week 6 ANRIND_4 ANRIND" class="gt_row gt_left">Total</td>
+<td headers="Week 6 ANRIND_4 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">4 (4.65%)</td>
+<td headers="Week 6 ANRIND_4 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">68 (79.07%)</td>
+<td headers="Week 6 ANRIND_4 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">3 (3.49%)</td>
+<td headers="Week 6 ANRIND_4 Placebo<br>(N=86)<->Total" class="gt_row gt_right">75 (87.21%)</td>
+<td headers="Week 6 ANRIND_4 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.39%)</td>
+<td headers="Week 6 ANRIND_4 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">65 (90.28%)</td>
+<td headers="Week 6 ANRIND_4 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.39%)</td>
+<td headers="Week 6 ANRIND_4 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">67 (93.06%)</td>
+<td headers="Week 6 ANRIND_4 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.04%)</td>
+<td headers="Week 6 ANRIND_4 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">61 (63.54%)</td>
+<td headers="Week 6 ANRIND_4 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">2 (2.08%)</td>
+<td headers="Week 6 ANRIND_4 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">64 (66.67%)</td></tr>
+    <tr class="gt_row_group_first"><td headers="Week 8 stub_1_5 stub_1" rowspan="4" class="gt_row gt_left gt_stub_row_group">Week 8</td>
+<td headers="Week 8 stub_1_5 ANRIND" class="gt_row gt_left">Low</td>
+<td headers="Week 8 stub_1_5 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FEE0D2; color: #000000;">1 (1.16%)</td>
+<td headers="Week 8 stub_1_5 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">1 (1.16%)</td>
+<td headers="Week 8 stub_1_5 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 stub_1_5 Placebo<br>(N=86)<->Total" class="gt_row gt_right">2 (2.33%)</td>
+<td headers="Week 8 stub_1_5 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 stub_1_5 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 8 stub_1_5 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 stub_1_5 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 8 stub_1_5 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 stub_1_5 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 8 stub_1_5 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 stub_1_5 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">0 (0%)</td></tr>
+    <tr><td headers="Week 8 ANRIND_6 ANRIND" class="gt_row gt_left">Normal</td>
+<td headers="Week 8 ANRIND_6 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #EF3B2C; color: #FFFFFF;">3 (3.49%)</td>
+<td headers="Week 8 ANRIND_6 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">65 (75.58%)</td>
+<td headers="Week 8 ANRIND_6 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 ANRIND_6 Placebo<br>(N=86)<->Total" class="gt_row gt_right">68 (79.07%)</td>
+<td headers="Week 8 ANRIND_6 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 ANRIND_6 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">50 (69.44%)</td>
+<td headers="Week 8 ANRIND_6 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 ANRIND_6 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">50 (69.44%)</td>
+<td headers="Week 8 ANRIND_6 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 ANRIND_6 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">56 (58.33%)</td>
+<td headers="Week 8 ANRIND_6 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 ANRIND_6 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">56 (58.33%)</td></tr>
+    <tr><td headers="Week 8 ANRIND_7 ANRIND" class="gt_row gt_left">High</td>
+<td headers="Week 8 ANRIND_7 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 ANRIND_7 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 8 ANRIND_7 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">3 (3.49%)</td>
+<td headers="Week 8 ANRIND_7 Placebo<br>(N=86)<->Total" class="gt_row gt_right">3 (3.49%)</td>
+<td headers="Week 8 ANRIND_7 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 ANRIND_7 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">4 (5.56%)</td>
+<td headers="Week 8 ANRIND_7 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.39%)</td>
+<td headers="Week 8 ANRIND_7 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">5 (6.94%)</td>
+<td headers="Week 8 ANRIND_7 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 ANRIND_7 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">3 (3.12%)</td>
+<td headers="Week 8 ANRIND_7 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">1 (1.04%)</td>
+<td headers="Week 8 ANRIND_7 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">4 (4.17%)</td></tr>
+    <tr><td headers="Week 8 ANRIND_8 ANRIND" class="gt_row gt_left">Total</td>
+<td headers="Week 8 ANRIND_8 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">4 (4.65%)</td>
+<td headers="Week 8 ANRIND_8 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">66 (76.74%)</td>
+<td headers="Week 8 ANRIND_8 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">3 (3.49%)</td>
+<td headers="Week 8 ANRIND_8 Placebo<br>(N=86)<->Total" class="gt_row gt_right">73 (84.88%)</td>
+<td headers="Week 8 ANRIND_8 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 ANRIND_8 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">55 (76.39%)</td>
+<td headers="Week 8 ANRIND_8 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.39%)</td>
+<td headers="Week 8 ANRIND_8 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">56 (77.78%)</td>
+<td headers="Week 8 ANRIND_8 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 8 ANRIND_8 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">59 (61.46%)</td>
+<td headers="Week 8 ANRIND_8 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">1 (1.04%)</td>
+<td headers="Week 8 ANRIND_8 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">60 (62.5%)</td></tr>
+    <tr class="gt_row_group_first"><td headers="Week 12 stub_1_9 stub_1" rowspan="4" class="gt_row gt_left gt_stub_row_group">Week 12</td>
+<td headers="Week 12 stub_1_9 ANRIND" class="gt_row gt_left">Low</td>
+<td headers="Week 12 stub_1_9 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">2 (2.33%)</td>
+<td headers="Week 12 stub_1_9 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 12 stub_1_9 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 stub_1_9 Placebo<br>(N=86)<->Total" class="gt_row gt_right">2 (2.33%)</td>
+<td headers="Week 12 stub_1_9 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 stub_1_9 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 12 stub_1_9 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 stub_1_9 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 12 stub_1_9 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 stub_1_9 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 12 stub_1_9 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 stub_1_9 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">0 (0%)</td></tr>
+    <tr><td headers="Week 12 ANRIND_10 ANRIND" class="gt_row gt_left">Normal</td>
+<td headers="Week 12 ANRIND_10 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">2 (2.33%)</td>
+<td headers="Week 12 ANRIND_10 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">59 (68.6%)</td>
+<td headers="Week 12 ANRIND_10 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 ANRIND_10 Placebo<br>(N=86)<->Total" class="gt_row gt_right">61 (70.93%)</td>
+<td headers="Week 12 ANRIND_10 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 ANRIND_10 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">48 (66.67%)</td>
+<td headers="Week 12 ANRIND_10 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 ANRIND_10 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">48 (66.67%)</td>
+<td headers="Week 12 ANRIND_10 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 ANRIND_10 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">49 (51.04%)</td>
+<td headers="Week 12 ANRIND_10 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 ANRIND_10 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">49 (51.04%)</td></tr>
+    <tr><td headers="Week 12 ANRIND_11 ANRIND" class="gt_row gt_left">High</td>
+<td headers="Week 12 ANRIND_11 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 ANRIND_11 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">1 (1.16%)</td>
+<td headers="Week 12 ANRIND_11 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">3 (3.49%)</td>
+<td headers="Week 12 ANRIND_11 Placebo<br>(N=86)<->Total" class="gt_row gt_right">4 (4.65%)</td>
+<td headers="Week 12 ANRIND_11 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 ANRIND_11 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 12 ANRIND_11 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.39%)</td>
+<td headers="Week 12 ANRIND_11 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 12 ANRIND_11 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 ANRIND_11 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">2 (2.08%)</td>
+<td headers="Week 12 ANRIND_11 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">1 (1.04%)</td>
+<td headers="Week 12 ANRIND_11 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">3 (3.12%)</td></tr>
+    <tr><td headers="Week 12 ANRIND_12 ANRIND" class="gt_row gt_left">Total</td>
+<td headers="Week 12 ANRIND_12 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">4 (4.65%)</td>
+<td headers="Week 12 ANRIND_12 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">60 (69.77%)</td>
+<td headers="Week 12 ANRIND_12 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">3 (3.49%)</td>
+<td headers="Week 12 ANRIND_12 Placebo<br>(N=86)<->Total" class="gt_row gt_right">67 (77.91%)</td>
+<td headers="Week 12 ANRIND_12 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 ANRIND_12 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">49 (68.06%)</td>
+<td headers="Week 12 ANRIND_12 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.39%)</td>
+<td headers="Week 12 ANRIND_12 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">50 (69.44%)</td>
+<td headers="Week 12 ANRIND_12 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 12 ANRIND_12 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">51 (53.12%)</td>
+<td headers="Week 12 ANRIND_12 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">1 (1.04%)</td>
+<td headers="Week 12 ANRIND_12 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">52 (54.17%)</td></tr>
+    <tr class="gt_row_group_first"><td headers="Week 16 stub_1_13 stub_1" rowspan="4" class="gt_row gt_left gt_stub_row_group">Week 16</td>
+<td headers="Week 16 stub_1_13 ANRIND" class="gt_row gt_left">Low</td>
+<td headers="Week 16 stub_1_13 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">2 (2.33%)</td>
+<td headers="Week 16 stub_1_13 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 16 stub_1_13 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 stub_1_13 Placebo<br>(N=86)<->Total" class="gt_row gt_right">2 (2.33%)</td>
+<td headers="Week 16 stub_1_13 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 stub_1_13 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 16 stub_1_13 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 stub_1_13 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 16 stub_1_13 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 stub_1_13 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 16 stub_1_13 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 stub_1_13 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">0 (0%)</td></tr>
+    <tr><td headers="Week 16 ANRIND_14 ANRIND" class="gt_row gt_left">Normal</td>
+<td headers="Week 16 ANRIND_14 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">2 (2.33%)</td>
+<td headers="Week 16 ANRIND_14 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">59 (68.6%)</td>
+<td headers="Week 16 ANRIND_14 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FDC7B1; color: #000000;">1 (1.16%)</td>
+<td headers="Week 16 ANRIND_14 Placebo<br>(N=86)<->Total" class="gt_row gt_right">62 (72.09%)</td>
+<td headers="Week 16 ANRIND_14 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 ANRIND_14 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">34 (47.22%)</td>
+<td headers="Week 16 ANRIND_14 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 ANRIND_14 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">34 (47.22%)</td>
+<td headers="Week 16 ANRIND_14 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 ANRIND_14 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">40 (41.67%)</td>
+<td headers="Week 16 ANRIND_14 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 ANRIND_14 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">40 (41.67%)</td></tr>
+    <tr><td headers="Week 16 ANRIND_15 ANRIND" class="gt_row gt_left">High</td>
+<td headers="Week 16 ANRIND_15 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 ANRIND_15 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">2 (2.33%)</td>
+<td headers="Week 16 ANRIND_15 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #F75C40; color: #FFFFFF;">2 (2.33%)</td>
+<td headers="Week 16 ANRIND_15 Placebo<br>(N=86)<->Total" class="gt_row gt_right">4 (4.65%)</td>
+<td headers="Week 16 ANRIND_15 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 ANRIND_15 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 16 ANRIND_15 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.39%)</td>
+<td headers="Week 16 ANRIND_15 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">2 (2.78%)</td>
+<td headers="Week 16 ANRIND_15 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 ANRIND_15 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">1 (1.04%)</td>
+<td headers="Week 16 ANRIND_15 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">1 (1.04%)</td>
+<td headers="Week 16 ANRIND_15 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">2 (2.08%)</td></tr>
+    <tr><td headers="Week 16 ANRIND_16 ANRIND" class="gt_row gt_left">Total</td>
+<td headers="Week 16 ANRIND_16 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">4 (4.65%)</td>
+<td headers="Week 16 ANRIND_16 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">61 (70.93%)</td>
+<td headers="Week 16 ANRIND_16 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">3 (3.49%)</td>
+<td headers="Week 16 ANRIND_16 Placebo<br>(N=86)<->Total" class="gt_row gt_right">68 (79.07%)</td>
+<td headers="Week 16 ANRIND_16 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 ANRIND_16 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">36 (50%)</td>
+<td headers="Week 16 ANRIND_16 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.39%)</td>
+<td headers="Week 16 ANRIND_16 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">37 (51.39%)</td>
+<td headers="Week 16 ANRIND_16 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 16 ANRIND_16 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">41 (42.71%)</td>
+<td headers="Week 16 ANRIND_16 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">1 (1.04%)</td>
+<td headers="Week 16 ANRIND_16 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">42 (43.75%)</td></tr>
+    <tr class="gt_row_group_first"><td headers="Week 20 stub_1_17 stub_1" rowspan="4" class="gt_row gt_left gt_stub_row_group">Week 20</td>
+<td headers="Week 20 stub_1_17 ANRIND" class="gt_row gt_left">Low</td>
+<td headers="Week 20 stub_1_17 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">2 (2.33%)</td>
+<td headers="Week 20 stub_1_17 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">1 (1.16%)</td>
+<td headers="Week 20 stub_1_17 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 stub_1_17 Placebo<br>(N=86)<->Total" class="gt_row gt_right">3 (3.49%)</td>
+<td headers="Week 20 stub_1_17 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 stub_1_17 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 20 stub_1_17 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 stub_1_17 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 20 stub_1_17 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 stub_1_17 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">1 (1.04%)</td>
+<td headers="Week 20 stub_1_17 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 stub_1_17 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">1 (1.04%)</td></tr>
+    <tr><td headers="Week 20 ANRIND_18 ANRIND" class="gt_row gt_left">Normal</td>
+<td headers="Week 20 ANRIND_18 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">2 (2.33%)</td>
+<td headers="Week 20 ANRIND_18 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">55 (63.95%)</td>
+<td headers="Week 20 ANRIND_18 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FDC7B1; color: #000000;">1 (1.16%)</td>
+<td headers="Week 20 ANRIND_18 Placebo<br>(N=86)<->Total" class="gt_row gt_right">58 (67.44%)</td>
+<td headers="Week 20 ANRIND_18 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 ANRIND_18 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">29 (40.28%)</td>
+<td headers="Week 20 ANRIND_18 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 ANRIND_18 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">29 (40.28%)</td>
+<td headers="Week 20 ANRIND_18 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 ANRIND_18 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">29 (30.21%)</td>
+<td headers="Week 20 ANRIND_18 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 ANRIND_18 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">29 (30.21%)</td></tr>
+    <tr><td headers="Week 20 ANRIND_19 ANRIND" class="gt_row gt_left">High</td>
+<td headers="Week 20 ANRIND_19 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 ANRIND_19 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">2 (2.33%)</td>
+<td headers="Week 20 ANRIND_19 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #F75C40; color: #FFFFFF;">2 (2.33%)</td>
+<td headers="Week 20 ANRIND_19 Placebo<br>(N=86)<->Total" class="gt_row gt_right">4 (4.65%)</td>
+<td headers="Week 20 ANRIND_19 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 ANRIND_19 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 20 ANRIND_19 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.39%)</td>
+<td headers="Week 20 ANRIND_19 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 20 ANRIND_19 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 ANRIND_19 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 20 ANRIND_19 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">1 (1.04%)</td>
+<td headers="Week 20 ANRIND_19 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">1 (1.04%)</td></tr>
+    <tr><td headers="Week 20 ANRIND_20 ANRIND" class="gt_row gt_left">Total</td>
+<td headers="Week 20 ANRIND_20 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">4 (4.65%)</td>
+<td headers="Week 20 ANRIND_20 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">58 (67.44%)</td>
+<td headers="Week 20 ANRIND_20 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">3 (3.49%)</td>
+<td headers="Week 20 ANRIND_20 Placebo<br>(N=86)<->Total" class="gt_row gt_right">65 (75.58%)</td>
+<td headers="Week 20 ANRIND_20 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 ANRIND_20 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">30 (41.67%)</td>
+<td headers="Week 20 ANRIND_20 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">1 (1.39%)</td>
+<td headers="Week 20 ANRIND_20 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">31 (43.06%)</td>
+<td headers="Week 20 ANRIND_20 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 20 ANRIND_20 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">30 (31.25%)</td>
+<td headers="Week 20 ANRIND_20 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">1 (1.04%)</td>
+<td headers="Week 20 ANRIND_20 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">31 (32.29%)</td></tr>
+    <tr class="gt_row_group_first"><td headers="Week 24 stub_1_21 stub_1" rowspan="4" class="gt_row gt_left gt_stub_row_group">Week 24</td>
+<td headers="Week 24 stub_1_21 ANRIND" class="gt_row gt_left">Low</td>
+<td headers="Week 24 stub_1_21 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FEE0D2; color: #000000;">1 (1.16%)</td>
+<td headers="Week 24 stub_1_21 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 24 stub_1_21 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 stub_1_21 Placebo<br>(N=86)<->Total" class="gt_row gt_right">1 (1.16%)</td>
+<td headers="Week 24 stub_1_21 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 stub_1_21 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 24 stub_1_21 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 stub_1_21 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 24 stub_1_21 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 stub_1_21 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 24 stub_1_21 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 stub_1_21 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">0 (0%)</td></tr>
+    <tr><td headers="Week 24 ANRIND_22 ANRIND" class="gt_row gt_left">Normal</td>
+<td headers="Week 24 ANRIND_22 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #EF3B2C; color: #FFFFFF;">3 (3.49%)</td>
+<td headers="Week 24 ANRIND_22 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">47 (54.65%)</td>
+<td headers="Week 24 ANRIND_22 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FDC7B1; color: #000000;">1 (1.16%)</td>
+<td headers="Week 24 ANRIND_22 Placebo<br>(N=86)<->Total" class="gt_row gt_right">51 (59.3%)</td>
+<td headers="Week 24 ANRIND_22 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 ANRIND_22 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">29 (40.28%)</td>
+<td headers="Week 24 ANRIND_22 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 ANRIND_22 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">29 (40.28%)</td>
+<td headers="Week 24 ANRIND_22 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 ANRIND_22 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">26 (27.08%)</td>
+<td headers="Week 24 ANRIND_22 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 ANRIND_22 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">26 (27.08%)</td></tr>
+    <tr><td headers="Week 24 ANRIND_23 ANRIND" class="gt_row gt_left">High</td>
+<td headers="Week 24 ANRIND_23 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 ANRIND_23 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">2 (2.33%)</td>
+<td headers="Week 24 ANRIND_23 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #F75C40; color: #FFFFFF;">2 (2.33%)</td>
+<td headers="Week 24 ANRIND_23 Placebo<br>(N=86)<->Total" class="gt_row gt_right">4 (4.65%)</td>
+<td headers="Week 24 ANRIND_23 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 ANRIND_23 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 24 ANRIND_23 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 ANRIND_23 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 24 ANRIND_23 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 ANRIND_23 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 24 ANRIND_23 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">1 (1.04%)</td>
+<td headers="Week 24 ANRIND_23 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">1 (1.04%)</td></tr>
+    <tr><td headers="Week 24 ANRIND_24 ANRIND" class="gt_row gt_left">Total</td>
+<td headers="Week 24 ANRIND_24 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">4 (4.65%)</td>
+<td headers="Week 24 ANRIND_24 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">49 (56.98%)</td>
+<td headers="Week 24 ANRIND_24 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">3 (3.49%)</td>
+<td headers="Week 24 ANRIND_24 Placebo<br>(N=86)<->Total" class="gt_row gt_right">56 (65.12%)</td>
+<td headers="Week 24 ANRIND_24 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 ANRIND_24 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">30 (41.67%)</td>
+<td headers="Week 24 ANRIND_24 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 ANRIND_24 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">30 (41.67%)</td>
+<td headers="Week 24 ANRIND_24 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 24 ANRIND_24 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">26 (27.08%)</td>
+<td headers="Week 24 ANRIND_24 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">1 (1.04%)</td>
+<td headers="Week 24 ANRIND_24 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">27 (28.12%)</td></tr>
+    <tr class="gt_row_group_first"><td headers="Week 26 stub_1_25 stub_1" rowspan="4" class="gt_row gt_left gt_stub_row_group">Week 26</td>
+<td headers="Week 26 stub_1_25 ANRIND" class="gt_row gt_left">Low</td>
+<td headers="Week 26 stub_1_25 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">2 (2.33%)</td>
+<td headers="Week 26 stub_1_25 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">1 (1.16%)</td>
+<td headers="Week 26 stub_1_25 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 stub_1_25 Placebo<br>(N=86)<->Total" class="gt_row gt_right">3 (3.49%)</td>
+<td headers="Week 26 stub_1_25 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 stub_1_25 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 26 stub_1_25 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 stub_1_25 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">1 (1.39%)</td>
+<td headers="Week 26 stub_1_25 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 stub_1_25 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 26 stub_1_25 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 stub_1_25 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">0 (0%)</td></tr>
+    <tr><td headers="Week 26 ANRIND_26 ANRIND" class="gt_row gt_left">Normal</td>
+<td headers="Week 26 ANRIND_26 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">2 (2.33%)</td>
+<td headers="Week 26 ANRIND_26 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">48 (55.81%)</td>
+<td headers="Week 26 ANRIND_26 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #FDC7B1; color: #000000;">1 (1.16%)</td>
+<td headers="Week 26 ANRIND_26 Placebo<br>(N=86)<->Total" class="gt_row gt_right">51 (59.3%)</td>
+<td headers="Week 26 ANRIND_26 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 ANRIND_26 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">26 (36.11%)</td>
+<td headers="Week 26 ANRIND_26 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 ANRIND_26 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">26 (36.11%)</td>
+<td headers="Week 26 ANRIND_26 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 ANRIND_26 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">24 (25%)</td>
+<td headers="Week 26 ANRIND_26 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 ANRIND_26 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">24 (25%)</td></tr>
+    <tr><td headers="Week 26 ANRIND_27 ANRIND" class="gt_row gt_left">High</td>
+<td headers="Week 26 ANRIND_27 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 ANRIND_27 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">1 (1.16%)</td>
+<td headers="Week 26 ANRIND_27 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #F75C40; color: #FFFFFF;">2 (2.33%)</td>
+<td headers="Week 26 ANRIND_27 Placebo<br>(N=86)<->Total" class="gt_row gt_right">3 (3.49%)</td>
+<td headers="Week 26 ANRIND_27 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 ANRIND_27 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 26 ANRIND_27 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 ANRIND_27 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 26 ANRIND_27 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 ANRIND_27 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">0 (0%)</td>
+<td headers="Week 26 ANRIND_27 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">1 (1.04%)</td>
+<td headers="Week 26 ANRIND_27 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">1 (1.04%)</td></tr>
+    <tr><td headers="Week 26 ANRIND_28 ANRIND" class="gt_row gt_left">Total</td>
+<td headers="Week 26 ANRIND_28 Placebo<br>(N=86)<->Low" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">4 (4.65%)</td>
+<td headers="Week 26 ANRIND_28 Placebo<br>(N=86)<->Normal" class="gt_row gt_right">50 (58.14%)</td>
+<td headers="Week 26 ANRIND_28 Placebo<br>(N=86)<->High" class="gt_row gt_right" style="background-color: #A50F15; color: #FFFFFF;">3 (3.49%)</td>
+<td headers="Week 26 ANRIND_28 Placebo<br>(N=86)<->Total" class="gt_row gt_right">57 (66.28%)</td>
+<td headers="Week 26 ANRIND_28 Xanomeline High Dose<br>(N=72)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 ANRIND_28 Xanomeline High Dose<br>(N=72)<->Normal" class="gt_row gt_right">27 (37.5%)</td>
+<td headers="Week 26 ANRIND_28 Xanomeline High Dose<br>(N=72)<->High" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 ANRIND_28 Xanomeline High Dose<br>(N=72)<->Total" class="gt_row gt_right">27 (37.5%)</td>
+<td headers="Week 26 ANRIND_28 Xanomeline Low Dose<br>(N=96)<->Low" class="gt_row gt_right" style="background-color: #FFFFFF; color: #000000;">0 (0%)</td>
+<td headers="Week 26 ANRIND_28 Xanomeline Low Dose<br>(N=96)<->Normal" class="gt_row gt_right">24 (25%)</td>
+<td headers="Week 26 ANRIND_28 Xanomeline Low Dose<br>(N=96)<->High" class="gt_row gt_right" style="background-color: #FC9272; color: #000000;">1 (1.04%)</td>
+<td headers="Week 26 ANRIND_28 Xanomeline Low Dose<br>(N=96)<->Total" class="gt_row gt_right">25 (26.04%)</td></tr>
   </tbody>
   <tfoot class="gt_sourcenotes">
     <tr>
@@ -837,6 +1246,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
