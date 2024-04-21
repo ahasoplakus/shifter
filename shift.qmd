@@ -209,10 +209,7 @@ shift_final |>
   gt::tab_spanner(columns = contains(tab_spanners[1]), label = gt::md(m_tab_spanners[1])) |>
   gt::tab_spanner(columns = contains(tab_spanners[2]), label = gt::md(m_tab_spanners[2])) |>
   gt::tab_spanner(columns = contains(tab_spanners[3]), label = gt::md(m_tab_spanners[3])) |>
-  gt::tab_style(
-    style = gt::cell_text(font = "monospace"),
-    locations = gt::cells_body(columns = everything())
-  ) |>
+  gt::opt_table_font(font =  "monospace-slab-serif") |>
   gt::text_transform(
     fn = \(x) add_pct(x, N_Placebo, 2),
     locations = gt::cells_body(columns = contains(tab_spanners[1]))
