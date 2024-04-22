@@ -10,7 +10,7 @@ website:
         icon: house
       - href: shift.qmd
         text: Shift Table
-        icon: code
+        icon: table
      # - href: about.qmd
       #  icon: question-circle
     right:
@@ -20,7 +20,7 @@ website:
 
 format:
   html:
-    theme: yeti
+    theme: flatly
     smooth-scroll: true
     css: styles.css
     toc: true

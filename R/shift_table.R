@@ -57,9 +57,6 @@ build_shift_table <-
     grade_var_order <- expr2var(grade_var_order)
     visit_var <- expr2var(visit_var)
     group_vars <- c(trt_var, visit_var)
-    # get highest values of `analysis_grade_var` within each Treatment and Parameter group
-    # wrst_grade <- bds_dataset |>
-    #   get_worst_grade(analysis_grade_var, group_vars)
     # create a dataset {all_anrind_comb} with all possible combinations of Treatment, Parameter and
     # `analysis_grade_var`
     all_anrind_comb <- bds_dataset |>
@@ -88,7 +85,7 @@ build_shift_table <-
         id_cols = all_of(c(visit_var[1], analysis_grade_var)),
         names_from = all_of(c(trt_var, base_grade_var)),
         values_from = "CNT",
-        names_sep = "<->"
+        names_sep = "_Baseline_n (%)_"
       )
     # calculating the row group total of `analysis_grade_var`
     post_base_grade_totals <- grade_counts_wide |>

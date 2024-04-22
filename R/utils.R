@@ -88,9 +88,9 @@ glimpse_dataset <-
         buttons = list(
           list(
             extend = "colvis",
-            text = "Choose the columns to display",
+            text = "View",
             scroller = TRUE,
-            collectionLayout = "fixed two-column"
+            collectionLayout = "four-column"
           )
         ),
         colReorder = TRUE

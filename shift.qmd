@@ -49,7 +49,10 @@ glimpse_dataset(slice_head(adlb, n = 500))
 
 ### 1. Calculating BIG N
 
-The ADSL is the analysis dataset for each subject level. Initially subset the ADSL dataset with safety subjects only. Count number of subjects participating in each treatment group.
+The ADSL is the analysis dataset for each subject level. 
+
+-   Keep safety subjects only (`SAFFL` == `'Y'`)
+-   Count number of subjects participating in each treatment group.
 
 ```{r adsl_n}
 adsl_bign <- adsl |>
@@ -68,15 +71,14 @@ glimpse_dataset(adsl_bign)
 
 -   Filter out missing values in `BNRIND, ANRIND, AVAL`
 -   Merge `adsl` to `adlb` to add `BIG N`
--   Keep only <b>Hemoglobin</b> records which is our parameter of interest for this example
 -   Subset the ADLB dataset for safety subjects where analysis flag is equal to `Y` and at post-dose
--   Filter out Unscheduled Visit records
--   Concatenate `BIG N` with Treatment Labels in `trt_var`
+-   Select <b>Hemoglobin</b> records (which is our parameter of interest for this example) within the desired time period (Week 2-Week 6)
+-   Concatenate `BIG N` with Treatment Labels in `TRT_VAR`
 
 ```{r prep_adlb}
 #| warning: false
 #| message: false
-adlb_prep <- adlb |>
+adlb <- adlb |>
   na_to_missing() |>
   mutate(across(all_of(c("BNRIND", "ANRIND")), str_to_title)) |>
   left_join(adsl_bign) |>
@@ -85,15 +87,13 @@ adlb_prep <- adlb |>
     !is.na(.data$AVAL),
     .data$BNRIND != "<Missing>",
     .data$ANRIND != "<Missing>",
-    .data$PARAMCD == "HGB",
-    str_detect(
-      toupper(.data$AVISIT),
-      "UNSCHEDULED|BASELINE",
-      negate = TRUE
-    )
+    .data$AVISIT %in% c("Week 2", "Week 4", "Week 6")
   ) |>
-  mutate(trt_var = paste0(.data$TRT01A, " (N=", TRT_N, ")_Baseline_n (%)")) |>
+  mutate(TRT_VAR = paste0(.data$TRT01A, " (N=", .data$TRT_N, ")")) |>
   select(-TRT_N)
+
+adlb_prep <- adlb |>
+  filter(.data$PARAMCD == "HGB")
 ```
 
 ```{r}
@@ -105,7 +105,7 @@ glimpse_dataset(adlb_prep)
 
 ```{r dummy}
 all_anrind_comb <- expand_grid(
-  trt_var = unique(adlb_prep[["trt_var"]]),
+  TRT_VAR = unique(adlb_prep[["TRT_VAR"]]),
   AVISIT = intersect(levels(as.factor(adlb_prep[["AVISIT"]])), unique(adlb_prep[["AVISIT"]])),
   BNRIND = as.factor(c("Low", "Normal", "High", "Total"))
 ) |>
@@ -122,13 +122,13 @@ glimpse_dataset(all_anrind_comb)
 ```{r count}
 shift_counts <- adlb_prep |>
   bind_rows(mutate(adlb_prep, BNRIND = "Total")) |>
-  group_by(!!!syms(c("trt_var", "AVISITN", "ANRIND", "BNRIND"))) |>
+  group_by(!!!syms(c("TRT_VAR", "AVISITN", "ANRIND", "BNRIND"))) |>
   count(.data[["AVISIT"]], name = "CNT") |>
   ungroup() |>
-  full_join(all_anrind_comb, by = c("trt_var", "AVISIT", "BNRIND", "ANRIND")) |>
+  full_join(all_anrind_comb, by = c("TRT_VAR", "AVISIT", "BNRIND", "ANRIND")) |>
   mutate(across("CNT", ~ replace_na(.x, 0))) |>
   arrange(
-    .data[["trt_var"]],
+    .data[["TRT_VAR"]],
     factor(.data[["BNRIND"]], levels = c("Low", "Normal", "High", "Total")),
     factor(.data[["ANRIND"]], levels = c("Low", "Normal", "High", "Total")),
     .data[["AVISITN"]]
@@ -147,9 +147,9 @@ glimpse_dataset(shift_counts)
 shift_wide <- shift_counts |>
   pivot_wider(
     id_cols = all_of(c("AVISIT", "ANRIND")),
-    names_from = all_of(c("trt_var", "BNRIND")),
+    names_from = all_of(c("TRT_VAR", "BNRIND")),
     values_from = "CNT",
-    names_sep = "_"
+    names_sep = "_Baseline_n (%)_"
   )
 
 post_base_grade_totals <- shift_wide |>
@@ -160,14 +160,14 @@ shift_final <- shift_wide |>
   bind_rows(post_base_grade_totals)
 ```
 
-The same could be attained by creating a function `build_shift_table()` which covers Steps 3-5
+The same could be attained by creating a function `build_shift_table()` which covers <b>Steps 3-5</b>
 
 ```{r}
 #| eval: false
 shift_final <-
   build_shift_table(
     bds_dataset = adlb_prep,
-    trt_var = exprs(trt_var),
+    trt_var = exprs(TRT_VAR),
     analysis_grade_var = exprs(ANRIND),
     base_grade_var = exprs(BNRIND),
     grade_var_order = exprs(Low, Normal, High),
@@ -183,7 +183,7 @@ glimpse_dataset(shift_final)
 ### 6. Display the final table
 
 ```{r display}
-tab_spanners <- unique(pull(adlb_prep, "trt_var"))
+tab_spanners <- unique(pull(adlb_prep, "TRT_VAR"))
 N_labs <- map(set_names(unique(adsl_bign[["TRT01A"]])), ~ get_trt_N(adsl_bign, "TRT01A", .x))
 
 shift_final |>
@@ -220,4 +220,67 @@ shift_final |>
     heading.title.font.size = "20px",
     heading.subtitle.font.size = "14px"
   )
+```
+
+### 7. Using `{purrr}` to iterate creating Shift Tables for multiple parameters
+
+```{r}
+adlb_urine <- adlb |>
+  filter(.data$PARCAT1 == "URINALYSIS") |> 
+  group_nest(.data$PARAM)
+
+shift_out <- map(adlb_urine$data, \(x) {
+  build_shift_table(
+    bds_dataset = x,
+    trt_var = exprs(TRT_VAR),
+    analysis_grade_var = exprs(ANRIND),
+    base_grade_var = exprs(BNRIND),
+    grade_var_order = exprs(Low, Normal, High),
+    visit_var = exprs(AVISIT, AVISITN)
+  )
+}) |>
+  set_names(adlb_urine$PARAM)
+
+list_out <-
+  map(names(shift_out), \(x) {
+  shift_out[[x]] |>
+    gt::gt(groupname_col = "AVISIT", row_group_as_column = TRUE) |>
+    gt::cols_label(ANRIND = gt::md("Post<br>Dose")) |>
+    gt::tab_spanner_delim(delim = "_") |>
+    gt::text_transform(
+      fn = \(x) add_pct(x, N_labs[[1]], 1),
+      locations = gt::cells_body(columns = contains(tab_spanners[1]))
+    ) |>
+    gt::text_transform(
+      fn = \(x) add_pct(x, N_labs[[2]], 1),
+      locations = gt::cells_body(columns = contains(tab_spanners[2]))
+    ) |>
+    gt::text_transform(
+      fn = \(x) add_pct(x, N_labs[[3]], 1),
+      locations = gt::cells_body(columns = contains(tab_spanners[3]))
+    ) |>
+    gt::tab_stubhead(gt::md("Analysis Visit")) |>
+    gt::tab_footnote(
+      footnote = "This is a footnote.",
+      locations = gt::cells_body(columns = 1, rows = 1)
+    ) |>
+    gt::tab_header(
+      title = gt::md("Protocol: xxxx<br>Table x.x<br>Shift Table of Lab Urinalysis<br>(Full Safety Analysis Set)"),
+      subtitle = paste0("Parameter: ", x)
+    ) |>
+    gt::tab_options(
+      table.font.names = "monospace-slab-serif",
+      heading.align = "left",
+      data_row.padding = gt::px(15),
+      column_labels.font.weight = "bold",
+      heading.title.font.weight = "bold",
+      heading.title.font.size = "20px",
+      heading.subtitle.font.size = "14px"
+    )
+})
+```
+
+```{r list, results='asis'}
+#| echo: false
+walk(seq_along(list_out), \(i) print(list_out[[i]]))
 ```

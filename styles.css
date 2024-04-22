@@ -11,3 +11,10 @@
 .gt_heading {
     border-top-style: hidden !important;
 }
+
+div.dt-button-collection {
+    position: absolute;
+    width: 400px !important;
+    font-size: small !important;
+    border: 5px solid rgba(0, 0, 0, 0.4) !important;
+}
