@@ -10,7 +10,7 @@ website:
         icon: house
       - href: shift.qmd
         text: Shift Table
-        icon: table
+        icon: code
      # - href: about.qmd
       #  icon: question-circle
     right:

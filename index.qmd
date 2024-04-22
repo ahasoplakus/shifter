@@ -1,11 +1,13 @@
 ---
-title: "A Tidy approach to create Shift Tables using {tidyverse} and {gt}"
+title: "Tidy Shift Tables in R using {tidyverse} and {gt}"
 author: Sukalpo Saha
 abstract-title: " What is a Shift Table?"
 abstract: "A shift table is a table that displays the number of subjects who are low, normal or high at baseline and the shift at post-dose. Writing code for a shift table is an easier task, if ADaM datasets are used rather than raw datasets. It represents cross frequencies of baseline values with post-dose values. The produced shift table gives safety information of the subjects during the clinical study."
 ---
 
 ## Shift Tables in Clinical Trials
+
+![](img/shift.png)
 
 ### Purpose
 
@@ -18,7 +20,3 @@ It is important to look at the effect of the drug by comparing values at baselin
 All safety related data is collected in a clinical trial study for safety analysis. The laboratory data is one of the most important parts of safety analysis in any drug discovery study. The data mapping team and Statistical Programmers in the clinical programming department support the clinical data analysis and reporting process. The data mapping team analyzes and creates SDTM datasets from raw datasets. The Statistical Programming team creates the ADaM datasets and generates reports in a clinical study. ADaM data structure is such that, it has all the necessary variables needed to create reporting code and this makes the job easier for programmers.
 
 There are several summary tables commonly used to produce laboratory results. Descriptive statistics, clinically significance, shift tables and toxicity grade summaries are some of the summary tables that are commonly used. The shift table is one of the most frequently requested in a clinical study by statisticians or clinicians. The site that provides the laboratory results usually produces the normal ranges for numeric lab tests. The study team analyzes the lab results based on normal range and then flags or categorizes whether it is low, normal or high.
-
-### Example
-
-![](img/shift.png)
