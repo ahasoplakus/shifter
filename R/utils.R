@@ -36,7 +36,9 @@ custom_split <- function(string, pattern) {
 }
 
 add_pct <- function(x, denom, digits = 2) {
-  paste0(x, " (", round(as.numeric(x) / denom * 100, digits), ")")
+  map_chr(x, ~ ifelse(as.numeric(.x) > 0, paste0(
+    .x, " (", round(as.numeric(.x) / denom * 100, digits), "%)"
+  ), .x))
 }
 
 gt_pal <- function() {

@@ -21,7 +21,7 @@ walk(list.files(here::here("R"), pattern = ".R", full.names = TRUE), source)
 
 The following ADSL and ADLB ADaM datasets from `{pharmaverseadam}` R package are used in creation of shift table and help with understanding the programming process.
 
-::: {.panel-tabset}
+::: panel-tabset
 ## ADSL
 
 ```{r}
@@ -43,7 +43,6 @@ adlb <- pharmaverseadam::adlb
 #| echo: false
 glimpse_dataset(slice_head(adlb, n = 500))
 ```
-
 :::
 
 ## Steps to create a Shift Table {.unnumbered}
@@ -93,7 +92,7 @@ adlb_prep <- adlb |>
       negate = TRUE
     )
   ) |>
-  mutate(trt_var = paste0(.data$TRT01A, "<br>(N=", TRT_N, ")")) |>
+  mutate(trt_var = paste0(.data$TRT01A, " (N=", TRT_N, ")_Baseline_n (%)")) |>
   select(-TRT_N)
 ```
 
@@ -102,27 +101,9 @@ adlb_prep <- adlb |>
 glimpse_dataset(adlb_prep)
 ```
 
-<br>
-Storing some table options (headers and labels) to use while displaying the
-final table
-</br>
-
-```{r tab_options}
-tab_spanners <- unique(adlb_prep$trt_var)
-tab_spanners
-m_tab_spanners <- paste0(tab_spanners, "<br>Baseline<br>n (%)")
-m_tab_spanners
-N_Placebo <- get_trt_N(adsl_bign, "TRT01A", "Placebo")
-N_Placebo
-N_Xano_High <- get_trt_N(adsl_bign, "TRT01A", "Xanomeline High Dose")
-N_Xano_High
-N_Xano_Low <- get_trt_N(adsl_bign, "TRT01A", "Xanomeline Low Dose")
-N_Xano_Low
-```
-
 ### 3. Creating a dummy dataset to get all combinations of ANRIND and BNRIND
 
-``` {r dummy}
+```{r dummy}
 all_anrind_comb <- expand_grid(
   trt_var = unique(adlb_prep[["trt_var"]]),
   AVISIT = intersect(levels(as.factor(adlb_prep[["AVISIT"]])), unique(adlb_prep[["AVISIT"]])),
@@ -168,7 +149,7 @@ shift_wide <- shift_counts |>
     id_cols = all_of(c("AVISIT", "ANRIND")),
     names_from = all_of(c("trt_var", "BNRIND")),
     values_from = "CNT",
-    names_sep = "<->"
+    names_sep = "_"
   )
 
 post_base_grade_totals <- shift_wide |>
@@ -202,35 +183,41 @@ glimpse_dataset(shift_final)
 ### 6. Display the final table
 
 ```{r display}
+tab_spanners <- unique(pull(adlb_prep, "trt_var"))
+N_labs <- map(set_names(unique(adsl_bign[["TRT01A"]])), ~ get_trt_N(adsl_bign, "TRT01A", .x))
+
 shift_final |>
   gt::gt(groupname_col = "AVISIT", row_group_as_column = TRUE) |>
   gt::cols_label(ANRIND = gt::md("Post<br>Dose")) |>
-  gt::cols_label_with(columns = contains("<->"), \(x) custom_split(x, "<->")) |>
-  gt::tab_spanner(columns = contains(tab_spanners[1]), label = gt::md(m_tab_spanners[1])) |>
-  gt::tab_spanner(columns = contains(tab_spanners[2]), label = gt::md(m_tab_spanners[2])) |>
-  gt::tab_spanner(columns = contains(tab_spanners[3]), label = gt::md(m_tab_spanners[3])) |>
-  gt::opt_table_font(font =  "monospace-slab-serif") |>
+  gt::tab_spanner_delim(delim = "_") |>
   gt::text_transform(
-    fn = \(x) add_pct(x, N_Placebo, 2),
+    fn = \(x) add_pct(x, N_labs[[1]], 1),
     locations = gt::cells_body(columns = contains(tab_spanners[1]))
   ) |>
   gt::text_transform(
-    fn = \(x) add_pct(x, N_Xano_High, 2),
+    fn = \(x) add_pct(x, N_labs[[2]], 1),
     locations = gt::cells_body(columns = contains(tab_spanners[2]))
   ) |>
   gt::text_transform(
-    fn = \(x) add_pct(x, N_Xano_Low, 2),
+    fn = \(x) add_pct(x, N_labs[[3]], 1),
     locations = gt::cells_body(columns = contains(tab_spanners[3]))
   ) |>
   gt::tab_stubhead(gt::md("Analysis Visit")) |>
-  gt::tab_source_note(source_note = "This is a source note.") |>
   gt::tab_footnote(
     footnote = "This is a footnote.",
     locations = gt::cells_body(columns = 1, rows = 1)
   ) |>
   gt::tab_header(
-    title = gt::md("Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"),
+    title = gt::md("Protocol: xxxx<br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"),
     subtitle = "Parameter: Hemoglobin"
   ) |>
-  gt::opt_table_lines()
+  gt::tab_options(
+    table.font.names = "monospace-slab-serif",
+    heading.align = "left",
+    data_row.padding = gt::px(15),
+    column_labels.font.weight = "bold",
+    heading.title.font.weight = "bold",
+    heading.title.font.size = "20px",
+    heading.subtitle.font.size = "14px"
+  )
 ```
