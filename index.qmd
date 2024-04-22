@@ -21,4 +21,4 @@ There are several summary tables commonly used to produce laboratory results. De
 
 ### Example
 
-![Shift Table](img/shift.png)
+![](img/shift.png)
