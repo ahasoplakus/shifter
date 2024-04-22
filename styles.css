@@ -1,13 +1,4 @@
 /* css styles */
-#display-the-final-table > div.cell > div {
-    overflow-x: auto;
-    overflow-y: auto;
-}
-
-.gt_title {
-    padding-left: 23rem !important;
-}
-
 .gt_heading {
     border-top-style: hidden !important;
 }

@@ -223,7 +223,7 @@ shift_final |>
     style = gt::cell_text(align = "center"),
     locations = gt::cells_column_labels(columns = seq.int(3:13))
   ) |>
-  gt::cols_width(everything() ~ gt::px(125)) |>
+  gt::cols_width(everything() ~ gt::px(100)) |>
   gt::tab_options(
     table.background.color = "white",
     table.font.names = "monospace-slab-serif",
@@ -232,6 +232,7 @@ shift_final |>
     column_labels.font.weight = "bold",
     heading.title.font.weight = "bold",
     heading.title.font.size = "20px",
+    heading.padding = "10px",
     heading.subtitle.font.size = "14px"
   )
 ```
@@ -294,7 +295,7 @@ list_out <-
         style = gt::cell_text(align = "center"),
         locations = gt::cells_column_labels(columns = seq.int(3:13))
       ) |>
-      gt::cols_width(everything() ~ gt::px(125)) |>
+      gt::cols_width(everything() ~ gt::px(100)) |>
       gt::tab_options(
         table.background.color = "white",
         table.font.names = "monospace-slab-serif",
@@ -303,6 +304,7 @@ list_out <-
         column_labels.font.weight = "bold",
         heading.title.font.weight = "bold",
         heading.title.font.size = "20px",
+        heading.padding = "10px",
         heading.subtitle.font.size = "14px"
       )
   })
