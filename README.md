@@ -3,4 +3,4 @@
 # shift2R
 Tidy Approach to create <b>Shift Tables</b> in R using `{tidyverse}` and `{gt}`
 
-Quarto-Pub: [https://ahasoplakus.github.io/shifter/](https://ahasoplakus.github.io/shifter/)
+<b>gh-pages</b>: [https://ahasoplakus.github.io/shifter/](https://ahasoplakus.github.io/shifter/)
