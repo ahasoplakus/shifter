@@ -137,7 +137,8 @@ p,h1,h2,h3,#toc-title,#toc-function-reference,.nav-link,.table {
 }
 
 #navbarCollapse > ul.navbar-nav.navbar-nav-scroll.ms-auto > li > a {
-    background-color: white;
+    color: white;
+    font-weight: bold;
     border-radius: 3px;
     height: 100%;
     vertical-align: middle;
