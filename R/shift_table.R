@@ -85,7 +85,7 @@ build_shift_table <-
         id_cols = all_of(c(visit_var[1], analysis_grade_var)),
         names_from = all_of(c(trt_var, base_grade_var)),
         values_from = "CNT",
-        names_sep = "_Baseline_n (%)_"
+        names_sep = "<br>Baseline<br>n (%)_"
       )
     # calculating the row group total of `analysis_grade_var`
     post_base_grade_totals <- grade_counts_wide |>

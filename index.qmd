@@ -1,6 +1,7 @@
 ---
 title: "Tidy Shift Tables in R using {tidyverse} and {gt}"
 author: Sukalpo Saha
+date: 2024-04-22
 abstract-title: " What is a Shift Table?"
 abstract: "A shift table is a table that displays the number of subjects who are low, normal or high at baseline and the shift at post-dose. Writing code for a shift table is an easier task, if ADaM datasets are used rather than raw datasets. It represents cross frequencies of baseline values with post-dose values. The produced shift table gives safety information of the subjects during the clinical study."
 ---
