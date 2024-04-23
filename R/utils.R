@@ -97,3 +97,59 @@ glimpse_dataset <-
       )
     )
   }
+
+tab_display <-
+  function(dataset,
+           param,
+           group_col = "AVISIT",
+           trt_denom,
+           title = "Protocol: xxxx<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)",
+           footnote = "This is a footnote",
+           stub_title = "Analysis Visit") {
+    dataset |>
+      gt::gt(groupname_col = group_col, row_group_as_column = TRUE) |>
+      gt::cols_label_with(columns = contains("ANRIND"), \(x) gt::md("Reference<br>Range")) |>
+      gt::tab_spanner_delim(delim = "_") |>
+      gt::text_transform(fn = \(x) map(x, \(y) gt::md(y)), locations = gt::cells_column_spanners()) |>
+      gt::text_transform(
+        fn = \(x) add_pct(x, trt_denom[[1]], 1),
+        locations = gt::cells_body(columns = 3:6)
+      ) |>
+      gt::text_transform(
+        fn = \(x) add_pct(x, trt_denom[[2]], 1),
+        locations = gt::cells_body(columns = 7:10)
+      ) |>
+      gt::text_transform(
+        fn = \(x) add_pct(x, trt_denom[[3]], 1),
+        locations = gt::cells_body(columns = 11:14)
+      ) |>
+      gt::tab_stubhead(gt::md(stub_title)) |>
+      gt::tab_footnote(footnote = footnote) |>
+      gt::tab_header(
+        title = gt::md(title),
+        subtitle = paste0("Parameter: ", param)
+      ) |>
+      gt::tab_style(
+        style = gt::cell_text(weight = "bold"),
+        locations = gt::cells_body(columns = 2)
+      ) |>
+      gt::tab_style(
+        style = gt::cell_text(align = "center"),
+        locations = gt::cells_body(columns = 3:14)
+      ) |>
+      gt::tab_style(
+        style = gt::cell_text(align = "center"),
+        locations = gt::cells_column_labels(columns = 3:14)
+      ) |>
+      gt::tab_options(
+        table.background.color = "white",
+        table.font.names = "monospace-slab-serif",
+        row_group.font.weight = "bold",
+        column_labels.font.weight = "bold",
+        heading.align = "left",
+        heading.title.font.weight = "bold",
+        heading.title.font.size = "20px",
+        heading.padding = "10px",
+        heading.subtitle.font.size = "14px"
+      )
+  }

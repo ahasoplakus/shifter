@@ -187,31 +187,28 @@ glimpse_dataset(shift_final)
 ### 6. Display the final table
 
 ```{r display}
-N_labs <- map(set_names(unique(adsl_bign[["TRT01A"]])), ~ get_trt_N(adsl_bign, "TRT01A", .x))
+denom_N <- map(set_names(unique(adsl_bign[["TRT01A"]])), ~ get_trt_N(adsl_bign, "TRT01A", .x))
 
 out <-
   shift_final |>
   gt::gt(groupname_col = "AVISIT", row_group_as_column = TRUE) |>
-  gt::cols_label(ANRIND = gt::md("Post<br>Dose")) |>
+  gt::cols_label(ANRIND = gt::md("Reference<br>Range")) |>
   gt::tab_spanner_delim(delim = "_") |>
-  gt::text_transform(fn = \(x) map(x, \(y) gt::md(y)), locations = gt::cells_column_spanners()) |> 
+  gt::text_transform(fn = \(x) map(x, \(y) gt::md(y)), locations = gt::cells_column_spanners()) |>
   gt::text_transform(
-    fn = \(x) add_pct(x, N_labs[[1]], 1),
+    fn = \(x) add_pct(x, denom_N[[1]], 1),
     locations = gt::cells_body(columns = 3:6)
   ) |>
   gt::text_transform(
-    fn = \(x) add_pct(x, N_labs[[2]], 1),
+    fn = \(x) add_pct(x, denom_N[[2]], 1),
     locations = gt::cells_body(columns = 7:10)
   ) |>
   gt::text_transform(
-    fn = \(x) add_pct(x, N_labs[[3]], 1),
+    fn = \(x) add_pct(x, denom_N[[3]], 1),
     locations = gt::cells_body(columns = 11:14)
-  ) |> 
-  gt::tab_stubhead(gt::md("Analysis Visit")) |>
-  gt::tab_footnote(
-    footnote = "This is a footnote.",
-    locations = gt::cells_body(columns = 1, rows = 1)
   ) |>
+  gt::tab_stubhead(gt::md("Analysis Visit")) |>
+  gt::tab_footnote(footnote = "This is a footnote") |>
   gt::tab_header(
     title = gt::md("Protocol: xxxx<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"),
     subtitle = paste0("Parameter: ", unique(pull(adlb_prep, "PARAM")))
@@ -222,11 +219,11 @@ out <-
   ) |>
   gt::tab_style(
     style = gt::cell_text(align = "center"),
-    locations = gt::cells_body(columns = seq.int(3:14))
+    locations = gt::cells_body(columns = 3:14)
   ) |>
   gt::tab_style(
     style = gt::cell_text(align = "center"),
-    locations = gt::cells_column_labels(columns = seq.int(3:14))
+    locations = gt::cells_column_labels(columns = 3:14)
   ) |>
   gt::tab_options(
     table.background.color = "white",
@@ -264,55 +261,10 @@ shift_out <- map(adlb_hmt$data, \(x) {
 list_out <-
   map(names(shift_out), \(x) {
     shift_out[[x]] |>
-      gt::gt(groupname_col = "AVISIT", row_group_as_column = TRUE) |>
-      gt::cols_label(ANRIND = gt::md("Post<br>Dose")) |>
-      gt::tab_spanner_delim(delim = "_") |>
-      gt::text_transform(
-        fn = \(x) map(x, \(y) gt::md(y)),
-        locations = gt::cells_column_spanners()) |> 
-      gt::text_transform(
-        fn = \(x) add_pct(x, N_labs[[1]], 1),
-        locations = gt::cells_body(columns = 3:6)
-      ) |>
-      gt::text_transform(
-        fn = \(x) add_pct(x, N_labs[[2]], 1),
-        locations = gt::cells_body(columns = 7:10)
-      ) |>
-      gt::text_transform(
-        fn = \(x) add_pct(x, N_labs[[3]], 1),
-        locations = gt::cells_body(columns = 11:14)
-      ) |>
-      gt::tab_stubhead(gt::md("Analysis Visit")) |>
-      gt::tab_footnote(
-        footnote = "This is a footnote.",
-        locations = gt::cells_body(columns = 1, rows = 1)
-      ) |>
-      gt::tab_header(
-        title = gt::md("Protocol: xxxx<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"),
-        subtitle = paste0("Parameter: ", x)
-      ) |>
-      gt::tab_style(
-        style = gt::cell_text(weight = "bold"),
-        locations = gt::cells_body(columns = 2)
-      ) |>
-      gt::tab_style(
-        style = gt::cell_text(align = "center"),
-        locations = gt::cells_body(columns = seq.int(3:13))
-      ) |>
-      gt::tab_style(
-        style = gt::cell_text(align = "center"),
-        locations = gt::cells_column_labels(columns = seq.int(3:13))
-      ) |>
-      gt::tab_options(
-        table.background.color = "white",
-        table.font.names = "monospace-slab-serif",
-        row_group.font.weight = "bold",
-        column_labels.font.weight = "bold",
-        heading.align = "left",
-        heading.title.font.weight = "bold",
-        heading.title.font.size = "20px",
-        heading.padding = "10px",
-        heading.subtitle.font.size = "14px"
+      tab_display(
+        param = x,
+        group_col = "AVISIT",
+        trt_denom = denom_N
       )
   })
 ```

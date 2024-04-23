@@ -90,7 +90,7 @@ build_shift_table <-
     post_base_grade_totals <- grade_counts_wide |>
       summarize(across(where(is.numeric), sum), .by = all_of(visit_var[1])) |>
       mutate(!!analysis_grade_var := "Total")
-    visit_levels <- 
+    visit_levels <-
       arrange(filter(grade_counts, !is.na(.data[[visit_var[2]]])), by = .data[[visit_var[2]]]) |>
       pull(.data[[visit_var[1]]]) |>
       unique()
