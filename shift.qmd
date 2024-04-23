@@ -131,10 +131,8 @@ shift_counts <- adlb_prep |>
   arrange(
     .data[["TRT_VAR"]],
     factor(.data[["BNRIND"]], levels = c("Low", "Normal", "High", "Total")),
-    factor(.data[["ANRIND"]], levels = c("Low", "Normal", "High", "Total")),
-    .data[["AVISITN"]]
-  ) |>
-  select(-all_of("AVISITN"))
+    factor(.data[["ANRIND"]], levels = c("Low", "Normal", "High", "Total"))
+  )
 ```
 
 ```{r}
@@ -157,8 +155,13 @@ post_base_grade_totals <- shift_wide |>
   summarize(across(where(is.numeric), sum), .by = all_of("AVISIT")) |>
   mutate(ANRIND = "Total")
 
+visit_levels <- arrange(filter(shift_counts, !is.na(.data$AVISITN)), by = .data$AVISITN) |>
+  pull(.data$AVISIT) |>
+  unique()
+
 shift_final <- shift_wide |>
-  bind_rows(post_base_grade_totals)
+  bind_rows(post_base_grade_totals) |>
+  arrange(factor(.data$AVISIT, levels = visit_levels))
 ```
 
 The same could be attained by creating a function `build_shift_table()` which covers <b>Steps 3-5</b>
@@ -211,7 +214,7 @@ out <-
   ) |>
   gt::tab_header(
     title = gt::md("Protocol: xxxx<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"),
-    subtitle = "Parameter: Hemoglobin"
+    subtitle = paste0("Parameter: ", unique(pull(adlb_prep, "PARAM")))
   ) |>
   gt::tab_style(
     style = gt::cell_text(weight = "bold"),

@@ -65,7 +65,7 @@ build_shift_table <-
       )
     # get the count of parameter shift and merge with {all_anrind_comb} to preserve all combinations
     # of `analysis_grade_var`
-    grade_counts_wide <- bds_dataset |>
+    grade_counts <- bds_dataset |>
       summarize_grades(
         all_anrind_comb,
         trt_var,
@@ -76,11 +76,10 @@ build_shift_table <-
       arrange(
         .data[[trt_var]],
         factor(.data[[base_grade_var]], levels = c(grade_var_order, "Total")),
-        factor(.data[[analysis_grade_var]], levels = c(grade_var_order, "Total")),
-        .data[[visit_var[2]]]
-      ) |>
-      select(-all_of(visit_var[2])) |>
-      ## pivot to get values of `base_grade_var` as columns
+        factor(.data[[analysis_grade_var]], levels = c(grade_var_order, "Total"))
+      )
+    ## pivot to get values of `base_grade_var` as columns
+    grade_counts_wide <- grade_counts |>
       pivot_wider(
         id_cols = all_of(c(visit_var[1], analysis_grade_var)),
         names_from = all_of(c(trt_var, base_grade_var)),
@@ -91,7 +90,12 @@ build_shift_table <-
     post_base_grade_totals <- grade_counts_wide |>
       summarize(across(where(is.numeric), sum), .by = all_of(visit_var[1])) |>
       mutate(!!analysis_grade_var := "Total")
+    visit_levels <- 
+      arrange(filter(grade_counts, !is.na(.data[[visit_var[2]]])), by = .data[[visit_var[2]]]) |>
+      pull(.data[[visit_var[1]]]) |>
+      unique()
     # adding `base_grade_var` total to main data frame
     grade_counts_wide |>
-      bind_rows(post_base_grade_totals)
+      bind_rows(post_base_grade_totals) |>
+      arrange(factor(.data[[visit_var[1]]], levels = visit_levels))
   }
