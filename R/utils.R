@@ -103,9 +103,9 @@ tab_display <-
            param,
            group_col = "AVISIT",
            trt_denom,
-           title = "Protocol: xxxx<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)",
+           title = "",
            footnote = "This is a footnote",
-           stub_title = "Analysis Visit") {
+           stub_label = "Analysis Visit") {
     dataset |>
       gt::gt(groupname_col = group_col, row_group_as_column = TRUE) |>
       gt::cols_label_with(columns = contains("ANRIND"), \(x) gt::md("Reference<br>Range")) |>
@@ -123,7 +123,7 @@ tab_display <-
         fn = \(x) add_pct(x, trt_denom[[3]], 1),
         locations = gt::cells_body(columns = 11:14)
       ) |>
-      gt::tab_stubhead(gt::md(stub_title)) |>
+      gt::tab_stubhead(gt::md(stub_label)) |>
       gt::tab_footnote(footnote = footnote) |>
       gt::tab_header(
         title = gt::md(title),

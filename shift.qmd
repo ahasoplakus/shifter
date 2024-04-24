@@ -68,6 +68,14 @@ adsl_bign <- adsl |>
 glimpse_dataset(adsl_bign)
 ```
 
+Store `N` by treatment group within a list to use later as a denominator for counts
+
+```{r}
+denom_N <-
+  map(set_names(unique(adsl_bign[["TRT01A"]])), ~ get_trt_N(adsl_bign, "TRT01A", .x))
+denom_N
+```
+
 ### 2. Pre-process Lab data
 
 -   Filter out missing values in `BNRIND, ANRIND, AVAL`
@@ -184,11 +192,12 @@ shift_final <-
 glimpse_dataset(shift_final)
 ```
 
-### 6. Display the final table
+### 6. Display
+
+::: panel-tabset
+## Single Parameter
 
 ```{r display}
-denom_N <- map(set_names(unique(adsl_bign[["TRT01A"]])), ~ get_trt_N(adsl_bign, "TRT01A", .x))
-
 out <-
   shift_final |>
   gt::gt(groupname_col = "AVISIT", row_group_as_column = TRUE) |>
@@ -239,7 +248,9 @@ out <-
 out
 ```
 
-### 7. Using `{purrr}` to iterate creating Shift Tables for multiple parameters
+## Multiple Parameters
+
+Using `{purrr}` functions to iterate creating Shift Tables
 
 ```{r}
 adlb_hmt <- adlb |>
@@ -260,12 +271,15 @@ shift_out <- map(adlb_hmt$data, \(x) {
 
 list_out <-
   map(names(shift_out), \(x) {
-    shift_out[[x]] |>
-      tab_display(
-        param = x,
-        group_col = "AVISIT",
-        trt_denom = denom_N
-      )
+    tab_display(
+      shift_out[[x]],
+      param = x,
+      group_col = "AVISIT",
+      trt_denom = denom_N,
+      title = "Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)",
+      footnote = "Add footnote here",
+      stub_label = "Analysis Visit"
+    )
   })
 ```
 
@@ -273,3 +287,4 @@ list_out <-
 #| echo: false
 walk(seq_along(list_out), \(i) print(list_out[[i]]))
 ```
+:::
