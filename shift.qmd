@@ -3,7 +3,9 @@ title: "Workflow to create a Shift Table in R"
 html-table-processing: none
 ---
 
-We will focus on how to create such a laboratory shift table in a step-wise explanation.
+Generating a shift table involves calculating Big N's (treatment totals), lab parameter counts, denominator counts and then displaying the final table adhering to the expected layout.
+
+The workflow below describes a step-by-step programming approach to create Laboratory Shift Tables in R using the `{tidyverse}` suite for data wrangling, and `{gt}` R package to display the shift table according to the expected layout.
 
 ## Required Packages {.unnumbered}
 
@@ -15,13 +17,14 @@ suppressPackageStartupMessages(library(rlang))
 suppressPackageStartupMessages(library(purrr))
 suppressPackageStartupMessages(library(stringr))
 suppressPackageStartupMessages(library(gt))
+suppressPackageStartupMessages(library(here))
 
-walk(list.files(here::here("R"), pattern = ".R", full.names = TRUE), source)
+walk(list.files(here("R"), pattern = ".R", full.names = TRUE), source)
 ```
 
 ## Data used for Analysis {.unnumbered}
 
-The following ADSL and ADLB ADaM datasets from `{pharmaverseadam}` R package are used in creation of shift table and help with understanding the programming process.
+The following ADSL and ADLB ADaM datasets from `{pharmaverseadam}` R package are used in creation of the shift table and to help understanding the programming process.
 
 ::: panel-tabset
 ## ADSL
@@ -47,14 +50,14 @@ glimpse_dataset(slice_head(adlb, n = 500))
 ```
 :::
 
-## Steps {.unnumbered}
+## Programming Steps {.unnumbered}
 
-### 1. Calculating BIG N
+### 1. Calculating BIG N (Treatment Totals)
 
 The ADSL is the analysis dataset for each subject level. 
 
 -   Keep safety subjects only (`SAFFL` == `'Y'`)
--   Count number of subjects participating in each treatment group.
+-   Count number of subjects participating in each treatment group (`TRT01A`)
 
 ```{r adsl_n}
 adsl_bign <- adsl |>
@@ -69,7 +72,9 @@ adsl_bign <- adsl |>
 glimpse_dataset(adsl_bign)
 ```
 
-Store `N` by treatment group within a list to use later as a denominator for counts
+#### 1.1 Calculating denominator count
+
+Store `N` by treatment group within a list to use later to display total number of subjects in each treatment group at top level of the report.
 
 ```{r}
 denom_N <-
@@ -80,15 +85,15 @@ denom_N
 ### 2. Pre-process Lab data
 
 -   Filter out missing values in `BNRIND, ANRIND, AVAL`
--   Merge `adsl` to `adlb` to add `BIG N`
--   Subset the ADLB dataset for safety subjects where analysis flag is equal to `Y` and at post-dose
--   Select <b>Hemoglobin</b> records (which is our parameter of interest for this example) within the desired time period (Week 2-Week 6)
--   Concatenate `BIG N` with Treatment Labels in `TRT_VAR`
+-   Merge `adsl_bign` to `adlb` to add `TRT_N`
+-   Subset the merged `adlb` dataset for safety subjects where analysis flag is equal to `Y` and at post-dose
+-   Select Lab records within the desired time period (eg. `Week 2-Week 6`) to display the shifts in
+-   Add `BIG N` to treatment labels by concatenating `TRT_N` with `TRT01A`
 
 ```{r prep_adlb}
 #| warning: false
 #| message: false
-adlb <- adlb |>
+adlb_prep <- adlb |>
   na_to_missing() |>
   mutate(across(all_of(c("BNRIND", "ANRIND")), str_to_title)) |>
   left_join(adsl_bign) |>
@@ -101,22 +106,29 @@ adlb <- adlb |>
   ) |>
   mutate(TRT_VAR = paste0(.data$TRT01A, "<br>(N=", .data$TRT_N, ")")) |>
   select(-TRT_N)
+```
 
-adlb_prep <- adlb |>
+#### 2.1 Subsetting the `adlb` dataset for Hemoglobin Lab parameters
+
+```{r}
+adlb_hgb <- adlb_prep |>
   filter(.data$PARAMCD == "HGB")
 ```
 
 ```{r}
 #| echo: false
-glimpse_dataset(adlb_prep)
+glimpse_dataset(adlb_hgb)
 ```
 
-### 3. Creating a dummy dataset to get all combinations of ANRIND and BNRIND
+### 3. Creating a dummy dataset
+
+Creat a dummy dataset that contains a row for each Base value (`Low`, `Normal`, `High` and `Total`) and corresponding post-dose 
+value (`Low`, `Normal`, `High`).
 
 ```{r dummy}
-all_anrind_comb <- expand_grid(
-  TRT_VAR = unique(adlb_prep[["TRT_VAR"]]),
-  AVISIT = intersect(levels(as.factor(adlb_prep[["AVISIT"]])), unique(adlb_prep[["AVISIT"]])),
+comb_base_pbase <- expand_grid(
+  TRT_VAR = unique(adlb_hgb[["TRT_VAR"]]),
+  AVISIT = intersect(levels(as.factor(adlb_hgb[["AVISIT"]])), unique(adlb_hgb[["AVISIT"]])),
   BNRIND = as.factor(c("Low", "Normal", "High", "Total"))
 ) |>
   cross_join(tibble(ANRIND = as.factor(c("Low", "Normal", "High"))))
@@ -124,18 +136,18 @@ all_anrind_comb <- expand_grid(
 
 ```{r}
 #| echo: false
-glimpse_dataset(all_anrind_comb)
+glimpse_dataset(comb_base_pbase)
 ```
 
-### 4. Performing Counts
+### 4. Calculate Parameter Counts
 
 ```{r count}
-shift_counts <- adlb_prep |>
-  bind_rows(mutate(adlb_prep, BNRIND = "Total")) |>
+shift_counts <- adlb_hgb |>
+  bind_rows(mutate(adlb_hgb, BNRIND = "Total")) |>
   group_by(!!!syms(c("TRT_VAR", "AVISITN", "ANRIND", "BNRIND"))) |>
   count(.data[["AVISIT"]], name = "CNT") |>
   ungroup() |>
-  full_join(all_anrind_comb, by = c("TRT_VAR", "AVISIT", "BNRIND", "ANRIND")) |>
+  full_join(comb_base_pbase, by = c("TRT_VAR", "AVISIT", "BNRIND", "ANRIND")) |>
   mutate(across("CNT", ~ replace_na(.x, 0))) |>
   arrange(
     .data[["TRT_VAR"]],
@@ -149,7 +161,7 @@ shift_counts <- adlb_prep |>
 glimpse_dataset(shift_counts)
 ```
 
-### 5. Reshape Data and count Grade Totals
+### 5. Reshape Data and add Grade Totals
 
 ```{r reshape}
 shift_wide <- shift_counts |>
@@ -157,7 +169,7 @@ shift_wide <- shift_counts |>
     id_cols = all_of(c("AVISIT", "ANRIND")),
     names_from = all_of(c("TRT_VAR", "BNRIND")),
     values_from = "CNT",
-    names_sep = "<br>----------<br>Baseline<br>n (%)^"
+    names_sep = "<br>Baseline<br>n (%)^"
   )
 
 post_base_grade_totals <- shift_wide |>
@@ -179,7 +191,7 @@ The same could be attained by creating a function `build_shift_table()` which co
 #| eval: false
 shift_final <-
   build_shift_table(
-    bds_dataset = adlb_prep,
+    bds_dataset = adlb_hgb,
     trt_var = exprs(TRT_VAR),
     analysis_grade_var = exprs(ANRIND),
     base_grade_var = exprs(BNRIND),
@@ -193,7 +205,7 @@ shift_final <-
 glimpse_dataset(shift_final)
 ```
 
-### 6. Display
+### 6. Display Table
 
 ::: panel-tabset
 ## Single Parameter
@@ -202,7 +214,7 @@ glimpse_dataset(shift_final)
 out <-
   shift_final |>
   gt(groupname_col = "AVISIT", row_group_as_column = TRUE) |>
-  cols_label(ANRIND = md("Reference<br>Range")) |>
+  cols_label_with(columns = contains("ANRIND"), \(x) md("Reference<br>Range")) |>
   tab_spanner_delim(delim = "^") |>
   text_transform(fn = \(x) map(x, \(y) md(y)), locations = cells_column_spanners()) |>
   text_transform(
@@ -221,7 +233,7 @@ out <-
   tab_footnote(footnote = "This is a footnote") |>
   tab_header(
     title = md("Protocol: xxxx<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"), # nolint
-    subtitle = paste0("Parameter = ", unique(pull(adlb_prep, "PARAM")))
+    subtitle = paste0("Parameter = ", unique(pull(adlb_hgb, "PARAM")))
   ) |>
   tab_style(
     style = cell_text(weight = "bold"),
@@ -229,18 +241,17 @@ out <-
   ) |>
   tab_style(
     style = cell_text(align = "center"),
-    locations = cells_body(columns = 3:14)
+    locations = cells_body(columns = -c(1, 2))
   ) |>
   tab_style(
     style = cell_text(align = "center"),
-    locations = cells_column_labels(columns = 3:14)
+    locations = cells_column_labels(columns = -c(1, 2))
   ) |>
   tab_options(
     table.background.color = "white",
     table.font.names = "monospace-slab-serif",
     row_group.font.weight = "bold",
     column_labels.font.weight = "bold",
-    heading.align = "left",
     heading.title.font.weight = "bold",
     heading.title.font.size = "20px",
     heading.padding = "10px",
@@ -254,10 +265,8 @@ out <-
     .gt_table {
       width: max-content !important;
     }
-    .gt_title {
-      text-align: center !important;
-    }
     .gt_subtitle {
+      text-align: left !important;
       color: gray !important;
     }
     "
@@ -270,11 +279,11 @@ out
 Using `{purrr}` functions to iterate creating Shift Tables
 
 ```{r}
-adlb_hmt <- adlb |>
+adlb_multi <- adlb_prep |>
   filter(toupper(.data$PARAMCD) %in% c("PLAT", "HCT", "MCH")) |>
   group_nest(.data$PARAM)
 
-shift_out <- map(adlb_hmt$data, \(x) {
+shift_out <- map(adlb_multi$data, \(x) {
   build_shift_table(
     bds_dataset = x,
     trt_var = exprs(TRT_VAR),
@@ -284,7 +293,7 @@ shift_out <- map(adlb_hmt$data, \(x) {
     visit_var = exprs(AVISIT, AVISITN)
   )
 }) |>
-  set_names(adlb_hmt$PARAM)
+  set_names(adlb_multi$PARAM)
 
 list_out <-
   map(names(shift_out), \(x) {

@@ -122,18 +122,17 @@ tab_display <-
       ) |>
       tab_style(
         style = cell_text(align = "center"),
-        locations = cells_body(columns = 3:14)
+        locations = cells_body(columns = -c(1, 2))
       ) |>
       tab_style(
         style = cell_text(align = "center"),
-        locations = cells_column_labels(columns = 3:14)
+        locations = cells_column_labels(columns = -c(1, 2))
       ) |>
       tab_options(
         table.background.color = "white",
         table.font.names = "monospace-slab-serif",
         row_group.font.weight = "bold",
         column_labels.font.weight = "bold",
-        heading.align = "left",
         heading.title.font.weight = "bold",
         heading.title.font.size = "20px",
         heading.padding = "10px",
@@ -147,12 +146,10 @@ tab_display <-
     .gt_table {
       width: max-content !important;
     }
-    .gt_title {
-      text-align: center !important;
-    }
     .gt_subtitle {
+      text-align: left !important;
       color: gray !important;
     }
     "
-      )
+  )
   }

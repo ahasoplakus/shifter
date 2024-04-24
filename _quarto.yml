@@ -10,7 +10,7 @@ website:
         text: Introduction
         icon: house
       - href: shift.qmd
-        text: Shift Table
+        text: R Workflow
         icon: code
      # - href: about.qmd
       #  icon: question-circle
@@ -25,6 +25,7 @@ format:
     css: styles.css
     toc: true
     toc-location: left
+    toc_float: false
     page-layout: full
     code-fold: show
 

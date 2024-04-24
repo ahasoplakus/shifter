@@ -42,7 +42,10 @@ summarize_grades <-
       group_by(!!!syms(c(group_vars, base_grade_var, analysis_grade_var))) |>
       count(.data[[group_vars[2]]], name = "CNT") |>
       ungroup() |>
-      full_join(comb_df, by = c(trt_var, group_vars[2], analysis_grade_var, base_grade_var)) |>
+      full_join(
+        comb_df,
+        by = c(trt_var, group_vars[2], analysis_grade_var, base_grade_var)
+      ) |>
       mutate(across("CNT", ~ replace_na(.x, 0)))
   }
 
@@ -81,7 +84,9 @@ build_shift_table <-
       arrange(
         .data[[trt_var]],
         factor(.data[[base_grade_var]], levels = c(grade_var_order, "Total")),
-        factor(.data[[analysis_grade_var]], levels = c(grade_var_order, "Total"))
+        factor(
+          .data[[analysis_grade_var]], levels = c(grade_var_order, "Total")
+        )
       )
     ## pivot to get values of `base_grade_var` as columns
     grade_counts_wide <- grade_counts |>
@@ -89,7 +94,7 @@ build_shift_table <-
         id_cols = all_of(c(visit_var[1], analysis_grade_var)),
         names_from = all_of(c(trt_var, base_grade_var)),
         values_from = "CNT",
-        names_sep = "<br>----------<br>Baseline<br>n (%)^"
+        names_sep = "<br>Baseline<br>n (%)^"
       )
     # calculating the row group total of `analysis_grade_var`
     post_base_grade_totals <- grade_counts_wide |>
