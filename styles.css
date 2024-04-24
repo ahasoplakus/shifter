@@ -1,12 +1,4 @@
 /* css styles */
-.gt_heading {
-    border-top-style: hidden !important;
-}
-
-.gt_table {
-  width: max-content !important;
-}
-
 div.dt-button-collection {
     position: absolute;
     width: 400px !important;

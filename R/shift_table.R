@@ -22,7 +22,9 @@ get_all_grades <-
            grade_var_order) {
     expand_grid(
       !!trt_var := unique(df[[trt_var]]),
-      !!visit_var := intersect(levels(as.factor(df[[visit_var]])), unique(df[[visit_var]])),
+      !!visit_var := intersect(
+        levels(as.factor(df[[visit_var]])), unique(df[[visit_var]])
+      ),
       !!base_grade_var := as.factor(c(grade_var_order, "Total"))
     ) |>
       cross_join(tibble(!!analysis_grade_var := as.factor(grade_var_order)))
@@ -57,14 +59,17 @@ build_shift_table <-
     grade_var_order <- expr2var(grade_var_order)
     visit_var <- expr2var(visit_var)
     group_vars <- c(trt_var, visit_var)
-    # create a dataset {all_anrind_comb} with all possible combinations of Treatment, Parameter and
-    # `analysis_grade_var`
+    # create a dataset {all_anrind_comb} with all possible
+    # combinations of Treatment, Parameter and analysis_grade_var`
     all_anrind_comb <- bds_dataset |>
       get_all_grades(
-        trt_var, visit_var[1], analysis_grade_var, base_grade_var, grade_var_order
+        trt_var, visit_var[1],
+        analysis_grade_var,
+        base_grade_var,
+        grade_var_order
       )
-    # get the count of parameter shift and merge with {all_anrind_comb} to preserve all combinations
-    # of `analysis_grade_var`
+    # get the count of parameter shift and merge with {all_anrind_comb}
+    # to preserve all combinations # of `analysis_grade_var`
     grade_counts <- bds_dataset |>
       summarize_grades(
         all_anrind_comb,
@@ -84,14 +89,19 @@ build_shift_table <-
         id_cols = all_of(c(visit_var[1], analysis_grade_var)),
         names_from = all_of(c(trt_var, base_grade_var)),
         values_from = "CNT",
-        names_sep = "<br>Baseline<br>n (%)_"
+        names_sep = "<br>----------<br>Baseline<br>n (%)^"
       )
     # calculating the row group total of `analysis_grade_var`
     post_base_grade_totals <- grade_counts_wide |>
       summarize(across(where(is.numeric), sum), .by = all_of(visit_var[1])) |>
       mutate(!!analysis_grade_var := "Total")
     visit_levels <-
-      arrange(filter(grade_counts, !is.na(.data[[visit_var[2]]])), by = .data[[visit_var[2]]]) |>
+      arrange(
+        filter(
+          grade_counts, !is.na(.data[[visit_var[2]]])
+        ),
+        by = .data[[visit_var[2]]]
+      ) |>
       pull(.data[[visit_var[1]]]) |>
       unique()
     # adding `base_grade_var` total to main data frame

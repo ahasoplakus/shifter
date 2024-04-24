@@ -1,5 +1,5 @@
 ---
-title: "Creating a Shift Table in R"
+title: "Workflow to create a Shift Table in R"
 html-table-processing: none
 ---
 
@@ -14,6 +14,7 @@ suppressPackageStartupMessages(library(tidyr))
 suppressPackageStartupMessages(library(rlang))
 suppressPackageStartupMessages(library(purrr))
 suppressPackageStartupMessages(library(stringr))
+suppressPackageStartupMessages(library(gt))
 
 walk(list.files(here::here("R"), pattern = ".R", full.names = TRUE), source)
 ```
@@ -46,7 +47,7 @@ glimpse_dataset(slice_head(adlb, n = 500))
 ```
 :::
 
-## Steps to create a Shift Table {.unnumbered}
+## Steps {.unnumbered}
 
 ### 1. Calculating BIG N
 
@@ -156,7 +157,7 @@ shift_wide <- shift_counts |>
     id_cols = all_of(c("AVISIT", "ANRIND")),
     names_from = all_of(c("TRT_VAR", "BNRIND")),
     values_from = "CNT",
-    names_sep = "<br>Baseline<br>n (%)_"
+    names_sep = "<br>----------<br>Baseline<br>n (%)^"
   )
 
 post_base_grade_totals <- shift_wide |>
@@ -200,41 +201,41 @@ glimpse_dataset(shift_final)
 ```{r display}
 out <-
   shift_final |>
-  gt::gt(groupname_col = "AVISIT", row_group_as_column = TRUE) |>
-  gt::cols_label(ANRIND = gt::md("Reference<br>Range")) |>
-  gt::tab_spanner_delim(delim = "_") |>
-  gt::text_transform(fn = \(x) map(x, \(y) gt::md(y)), locations = gt::cells_column_spanners()) |>
-  gt::text_transform(
+  gt(groupname_col = "AVISIT", row_group_as_column = TRUE) |>
+  cols_label(ANRIND = md("Reference<br>Range")) |>
+  tab_spanner_delim(delim = "^") |>
+  text_transform(fn = \(x) map(x, \(y) md(y)), locations = cells_column_spanners()) |>
+  text_transform(
     fn = \(x) add_pct(x, denom_N[[1]], 1),
-    locations = gt::cells_body(columns = 3:6)
+    locations = cells_body(columns = 3:6)
   ) |>
-  gt::text_transform(
+  text_transform(
     fn = \(x) add_pct(x, denom_N[[2]], 1),
-    locations = gt::cells_body(columns = 7:10)
+    locations = cells_body(columns = 7:10)
   ) |>
-  gt::text_transform(
+  text_transform(
     fn = \(x) add_pct(x, denom_N[[3]], 1),
-    locations = gt::cells_body(columns = 11:14)
+    locations = cells_body(columns = 11:14)
   ) |>
-  gt::tab_stubhead(gt::md("Analysis Visit")) |>
-  gt::tab_footnote(footnote = "This is a footnote") |>
-  gt::tab_header(
-    title = gt::md("Protocol: xxxx<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"),
-    subtitle = paste0("Parameter: ", unique(pull(adlb_prep, "PARAM")))
+  tab_stubhead(md("Analysis Visit")) |>
+  tab_footnote(footnote = "This is a footnote") |>
+  tab_header(
+    title = md("Protocol: xxxx<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"), # nolint
+    subtitle = paste0("Parameter = ", unique(pull(adlb_prep, "PARAM")))
   ) |>
-  gt::tab_style(
-    style = gt::cell_text(weight = "bold"),
-    locations = gt::cells_body(columns = 2)
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = 2)
   ) |>
-  gt::tab_style(
-    style = gt::cell_text(align = "center"),
-    locations = gt::cells_body(columns = 3:14)
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(columns = 3:14)
   ) |>
-  gt::tab_style(
-    style = gt::cell_text(align = "center"),
-    locations = gt::cells_column_labels(columns = 3:14)
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_column_labels(columns = 3:14)
   ) |>
-  gt::tab_options(
+  tab_options(
     table.background.color = "white",
     table.font.names = "monospace-slab-serif",
     row_group.font.weight = "bold",
@@ -244,6 +245,22 @@ out <-
     heading.title.font.size = "20px",
     heading.padding = "10px",
     heading.subtitle.font.size = "14px"
+  ) |>
+  opt_css(
+    css = "
+    .gt_heading {
+      border-top-style: hidden !important;
+    }
+    .gt_table {
+      width: max-content !important;
+    }
+    .gt_title {
+      text-align: center !important;
+    }
+    .gt_subtitle {
+      color: gray !important;
+    }
+    "
   )
 out
 ```
@@ -276,7 +293,7 @@ list_out <-
       param = x,
       group_col = "AVISIT",
       trt_denom = denom_N,
-      title = "Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)",
+      title = "Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)", # nolint
       footnote = "Add footnote here",
       stub_label = "Analysis Visit"
     )

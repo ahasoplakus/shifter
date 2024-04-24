@@ -6,12 +6,14 @@ na_to_missing <- function(df) {
   df |>
     mutate(across(
       where(~ is.factor(.x) || is.character(.x)),
-      \(x) case_match(
-        str_squish(x),
-        "" ~ "<Missing>",
-        NA_character_ ~ "<Missing>",
-        .default = x
-      )
+      \(x) {
+        case_match(
+          str_squish(x),
+          "" ~ "<Missing>",
+          NA_character_ ~ "<Missing>",
+          .default = x
+        )
+      }
     ))
 }
 
@@ -31,28 +33,10 @@ get_trt_N <- function(adsl, trt_var, trt_val) {
     pull()
 }
 
-custom_split <- function(string, pattern) {
-  map_chr(str_split(string, pattern), \(x) x[2])
-}
-
 add_pct <- function(x, denom, digits = 2) {
   map_chr(x, ~ ifelse(as.numeric(.x) > 0, paste0(
     .x, " (", round(as.numeric(.x) / denom * 100, digits), "%)"
   ), .x))
-}
-
-gt_pal <- function() {
-  c(
-    "#FFFFFF",
-    "#FFF5F0",
-    "#FEE0D2",
-    "#FCBBA1",
-    "#FC9272",
-    "#FB6A4A",
-    "#EF3B2C",
-    "#CB181D",
-    "#A50F15"
-  )
 }
 
 glimpse_dataset <-
@@ -107,41 +91,44 @@ tab_display <-
            footnote = "This is a footnote",
            stub_label = "Analysis Visit") {
     dataset |>
-      gt::gt(groupname_col = group_col, row_group_as_column = TRUE) |>
-      gt::cols_label_with(columns = contains("ANRIND"), \(x) gt::md("Reference<br>Range")) |>
-      gt::tab_spanner_delim(delim = "_") |>
-      gt::text_transform(fn = \(x) map(x, \(y) gt::md(y)), locations = gt::cells_column_spanners()) |>
-      gt::text_transform(
+      gt(groupname_col = group_col, row_group_as_column = TRUE) |>
+      cols_label_with(columns = contains("ANRIND"), \(x) md("Reference<br>Range")) |>
+      tab_spanner_delim(delim = "^") |>
+      text_transform(
+        fn = \(x) map(x, \(y) md(y)),
+        locations = cells_column_spanners()
+      ) |>
+      text_transform(
         fn = \(x) add_pct(x, trt_denom[[1]], 1),
-        locations = gt::cells_body(columns = 3:6)
+        locations = cells_body(columns = 3:6)
       ) |>
-      gt::text_transform(
+      text_transform(
         fn = \(x) add_pct(x, trt_denom[[2]], 1),
-        locations = gt::cells_body(columns = 7:10)
+        locations = cells_body(columns = 7:10)
       ) |>
-      gt::text_transform(
+      text_transform(
         fn = \(x) add_pct(x, trt_denom[[3]], 1),
-        locations = gt::cells_body(columns = 11:14)
+        locations = cells_body(columns = 11:14)
       ) |>
-      gt::tab_stubhead(gt::md(stub_label)) |>
-      gt::tab_footnote(footnote = footnote) |>
-      gt::tab_header(
-        title = gt::md(title),
-        subtitle = paste0("Parameter: ", param)
+      tab_stubhead(md(stub_label)) |>
+      tab_footnote(footnote = footnote) |>
+      tab_header(
+        title = md(title),
+        subtitle = paste0("Parameter = ", param)
       ) |>
-      gt::tab_style(
-        style = gt::cell_text(weight = "bold"),
-        locations = gt::cells_body(columns = 2)
+      tab_style(
+        style = cell_text(weight = "bold"),
+        locations = cells_body(columns = 2)
       ) |>
-      gt::tab_style(
-        style = gt::cell_text(align = "center"),
-        locations = gt::cells_body(columns = 3:14)
+      tab_style(
+        style = cell_text(align = "center"),
+        locations = cells_body(columns = 3:14)
       ) |>
-      gt::tab_style(
-        style = gt::cell_text(align = "center"),
-        locations = gt::cells_column_labels(columns = 3:14)
+      tab_style(
+        style = cell_text(align = "center"),
+        locations = cells_column_labels(columns = 3:14)
       ) |>
-      gt::tab_options(
+      tab_options(
         table.background.color = "white",
         table.font.names = "monospace-slab-serif",
         row_group.font.weight = "bold",
@@ -151,5 +138,21 @@ tab_display <-
         heading.title.font.size = "20px",
         heading.padding = "10px",
         heading.subtitle.font.size = "14px"
+      ) |>
+      opt_css(
+        css = "
+    .gt_heading {
+      border-top-style: hidden !important;
+    }
+    .gt_table {
+      width: max-content !important;
+    }
+    .gt_title {
+      text-align: center !important;
+    }
+    .gt_subtitle {
+      color: gray !important;
+    }
+    "
       )
   }
