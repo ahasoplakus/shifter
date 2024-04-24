@@ -16,7 +16,6 @@ website:
       #  icon: question-circle
     right:
       - href: https://github.com/ahasoplakus/shifter
-        text: Source
         icon: github
 
 format:
