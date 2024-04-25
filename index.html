@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sukalpo Saha">
-<meta name="dcterms.date" content="2024-04-24">
+<meta name="dcterms.date" content="2024-04-25">
 
-<title>shift2R - Tidy Shift Tables for Clinical Trials</title>
+<title>shiftR - Tidy Shift Tables in R using {gt}</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -82,7 +82,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">shift2R</span>
+    <span class="navbar-title">shiftR</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -92,21 +92,12 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> <i class="bi bi-house" role="img">
-</i> 
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
 <span class="menu-text">Introduction</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./shift.html"> <i class="bi bi-code" role="img">
-</i> 
-<span class="menu-text">R Workflow</span></a>
-  </li>  
-</ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/ahasoplakus/shifter"> <i class="bi bi-github" role="img">
-</i> 
-<span class="menu-text"></span></a>
+    <a class="nav-link" href="./shift.html"> 
+<span class="menu-text">Shift Table in R</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -128,7 +119,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Tidy Shift Tables for Clinical Trials</h1>
+<h1 class="title">Tidy Shift Tables in R using {gt}</h1>
 </div>
 
 
@@ -145,7 +136,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 24, 2024</p>
+      <p class="date">April 25, 2024</p>
     </div>
   </div>
   
@@ -167,17 +158,18 @@ ul.task-list li input[type="checkbox"] {
 <p>It is important to look at the effect of the drug by comparing values at baseline and post –baseline in any clinical trials. <b>Shift Table</b> is one of the analysis approaches suggested in <b>E3 Guidelines</b> to show the number of patients who are low, normal, or high at baseline and then at selected time intervals. It’s easier to figure out any abnormality in data because the layout helps to get the count of subjects at two time points together. Shift tables can be created for any data like labs, vital signs and ECG etc.</p>
 <p>All safety related data is collected in a clinical trial study for safety analysis. The laboratory data is one of the most important parts of safety analysis in any drug discovery study. The data mapping team and Statistical Programmers in the clinical programming department support the clinical data analysis and reporting process. The data mapping team analyzes and creates SDTM datasets from raw datasets. The Statistical Programming team creates the ADaM datasets and generates reports in a clinical study. ADaM data structure is such that, it has all the necessary variables needed to create reporting code and this makes the job easier for programmers.</p>
 <p>There are several summary tables commonly used to produce laboratory results. Descriptive statistics, clinical significance, shift tables and toxicity grade summaries are some of the summary tables are some, that are commonly used. The shift table is one of the most frequently requested in a clinical study by statisticians or clinicians. The site that provides the laboratory results usually produces the normal ranges for numeric lab tests. The study team analyzes the lab results based on normal range and then flags or categorizes whether it is low, normal or high.</p>
-<p>The main purpose of shift tables in any clinical trial is to determine how the categorical result varies from baseline to post-dose. <b>Table 1</b> below represents a Shift Table for Hemoglobin Records depicting the number of subjects who are low, normal, or high at baseline and post-dose together.</p>
+<p>The main purpose of shift tables in any clinical trial is to determine how the categorical result varies from baseline to post-dose.</p>
+<p><b>Figure 1</b> represents a Shift Table for Hemoglobin Records showing the number of subjects who are low, normal, or high at baseline and post-dose together.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="img/shift.png" class="img-fluid figure-img"></p>
-<figcaption>Table 1</figcaption>
+<figcaption>Figure 1</figcaption>
 </figure>
 </div>
 
 
 
-</main> <!-- /main -->
+<a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -592,5 +584,5 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/ahasoplakus/shifter/blob/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/ahasoplakus/shifter/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer><script src="site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>
