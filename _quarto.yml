@@ -2,21 +2,20 @@ project:
   type: website
 
 website:
-  title: "shift2R"
+  title: "shiftR"
   page-navigation: true
+  back-to-top-navigation: true
+  repo-url: https://github.com/ahasoplakus/shifter
+  repo-branch: main
+  repo-actions: [source, issue]
   navbar:
     left:
       - href: index.qmd
         text: Introduction
-        icon: house
       - href: shift.qmd
-        text: R Workflow
-        icon: code
+        text: Shift Table in R
      # - href: about.qmd
       #  icon: question-circle
-    right:
-      - href: https://github.com/ahasoplakus/shifter
-        icon: github
 
 format:
   html:

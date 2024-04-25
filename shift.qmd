@@ -1,13 +1,11 @@
 ---
-title: "Workflow to create a Shift Table in R"
+title: "Creating a Shift Table in R"
 html-table-processing: none
 ---
 
-Generating a shift table involves calculating Big N's (treatment totals), lab parameter counts, denominator counts and then displaying the final table adhering to the expected layout.
+The workflow below shows a step-by-step programming approach to create Laboratory Shift Tables using the `{tidyverse}` suite for data wrangling, and `{gt}` to create the desired Shift Table layout.
 
-The workflow below describes a step-by-step programming approach to create Laboratory Shift Tables in R using the `{tidyverse}` suite for data wrangling, and `{gt}` R package to display the shift table according to the expected layout.
-
-## Required Packages {.unnumbered}
+## Required Packages
 
 ```{r setup}
 #| warning: false
@@ -22,12 +20,14 @@ suppressPackageStartupMessages(library(here))
 walk(list.files(here("R"), pattern = ".R", full.names = TRUE), source)
 ```
 
-## Data used for Analysis {.unnumbered}
+## Data used for Analysis
 
-The following ADSL and ADLB ADaM datasets from `{pharmaverseadam}` R package are used in creation of the shift table and to help understanding the programming process.
+We will make use of the `adsl` and `adlb` test <b>ADaM</b> datasets from the [{pharmaverseadam}](https://github.com/pharmaverse/pharmaverseadam) R package for analysis.
 
 ::: panel-tabset
 ## ADSL
+
+<b>ADSL is the analysis dataset for subject level</b>
 
 ```{r}
 adsl <- pharmaverseadam::adsl
@@ -40,6 +40,8 @@ glimpse_dataset(adsl)
 
 ## ADLB
 
+<b>ADLB is the analysis dataset for Laboratory Records of subjects</b>
+
 ```{r}
 adlb <- pharmaverseadam::adlb
 ```
@@ -50,13 +52,11 @@ glimpse_dataset(slice_head(adlb, n = 500))
 ```
 :::
 
-## Programming Steps {.unnumbered}
+## Programming Steps
 
 ### 1. Calculating BIG N (Treatment Totals)
 
-The ADSL is the analysis dataset for each subject level. 
-
--   Keep safety subjects only (`SAFFL` == `'Y'`)
+-   Keep only safety subjects (`SAFFL` == `'Y'`) in `adsl`
 -   Count number of subjects participating in each treatment group (`TRT01A`)
 
 ```{r adsl_n}
@@ -72,22 +72,23 @@ adsl_bign <- adsl |>
 glimpse_dataset(adsl_bign)
 ```
 
-#### 1.1 Calculating denominator count
+Get distinct treatment totals to
 
-Store `N` by treatment group within a list to use later to display total number of subjects in each treatment group at top level of the report.
+-   Display total number of subjects in each treatment group at top level of the report
+-   Use as denominator to calculate count percentages in the final table
 
 ```{r}
 denom_N <-
-  map(set_names(unique(adsl_bign[["TRT01A"]])), ~ get_trt_N(adsl_bign, "TRT01A", .x))
+  map(set_names(unique(adsl_bign[["TRT01A"]])), ~ get_trt_denom(adsl_bign, "TRT01A", .x))
 denom_N
 ```
 
-### 2. Pre-process Lab data
+### 2. Preprocessing Lab Records
 
--   Filter out missing values in `BNRIND, ANRIND, AVAL`
+-   Filter out missing values in Baseline Reference Range Indicator (`BNRIND`), Analysis Reference Range Indicator (`ANRIND`) and Analysis Value (`AVAL`)
 -   Merge `adsl_bign` to `adlb` to add `TRT_N`
--   Subset the merged `adlb` dataset for safety subjects where analysis flag is equal to `Y` and at post-dose
--   Select Lab records within the desired time period (eg. `Week 2-Week 6`) to display the shifts in
+-   Subset the resulting data for safety subjects where analysis flag is equal to `Y` and at post-dose
+-   Subset data to keep lab records within the desired time period (eg. `Week 2-Week 6`)
 -   Add `BIG N` to treatment labels by concatenating `TRT_N` with `TRT01A`
 
 ```{r prep_adlb}
@@ -108,7 +109,7 @@ adlb_prep <- adlb |>
   select(-TRT_N)
 ```
 
-#### 2.1 Subsetting the `adlb` dataset for Hemoglobin Lab parameters
+<br> Subset `adlb_prep` to keep only Hemoglobin records </br>
 
 ```{r}
 adlb_hgb <- adlb_prep |>
@@ -117,18 +118,20 @@ adlb_hgb <- adlb_prep |>
 
 ```{r}
 #| echo: false
-glimpse_dataset(adlb_hgb)
+glimpse_dataset(adlb_hgb, exprs(USUBJID, TRT01A, TRT_VAR, PARCAT1, PARAM, AVISIT, BNRIND, ANRIND, AVAL))
 ```
 
 ### 3. Creating a dummy dataset
 
-Creat a dummy dataset that contains a row for each Base value (`Low`, `Normal`, `High` and `Total`) and corresponding post-dose 
-value (`Low`, `Normal`, `High`).
+Create a dummy dataset that contains a row for each `BNRIND` and corresponding `ANRIND` by Treatment.
 
 ```{r dummy}
 comb_base_pbase <- expand_grid(
   TRT_VAR = unique(adlb_hgb[["TRT_VAR"]]),
-  AVISIT = intersect(levels(as.factor(adlb_hgb[["AVISIT"]])), unique(adlb_hgb[["AVISIT"]])),
+  AVISIT = intersect(
+    levels(as.factor(adlb_hgb[["AVISIT"]])),
+    unique(adlb_hgb[["AVISIT"]])
+  ),
   BNRIND = as.factor(c("Low", "Normal", "High", "Total"))
 ) |>
   cross_join(tibble(ANRIND = as.factor(c("Low", "Normal", "High"))))
@@ -139,7 +142,7 @@ comb_base_pbase <- expand_grid(
 glimpse_dataset(comb_base_pbase)
 ```
 
-### 4. Calculate Parameter Counts
+### 4. Getting Counts per Analysis Visit
 
 ```{r count}
 shift_counts <- adlb_hgb |>
@@ -147,6 +150,7 @@ shift_counts <- adlb_hgb |>
   group_by(!!!syms(c("TRT_VAR", "AVISITN", "ANRIND", "BNRIND"))) |>
   count(.data[["AVISIT"]], name = "CNT") |>
   ungroup() |>
+  # merge dummy dataset to get all combinations of `ANRIND` and `BNRIND` values
   full_join(comb_base_pbase, by = c("TRT_VAR", "AVISIT", "BNRIND", "ANRIND")) |>
   mutate(across("CNT", ~ replace_na(.x, 0))) |>
   arrange(
@@ -161,7 +165,7 @@ shift_counts <- adlb_hgb |>
 glimpse_dataset(shift_counts)
 ```
 
-### 5. Reshape Data and add Grade Totals
+### 5. Reshaping Data and adding Total Counts
 
 ```{r reshape}
 shift_wide <- shift_counts |>
@@ -176,7 +180,8 @@ post_base_grade_totals <- shift_wide |>
   summarize(across(where(is.numeric), sum), .by = all_of("AVISIT")) |>
   mutate(ANRIND = "Total")
 
-visit_levels <- arrange(filter(shift_counts, !is.na(.data$AVISITN)), by = .data$AVISITN) |>
+visit_levels <-
+  arrange(filter(shift_counts, !is.na(.data$AVISITN)), by = .data$AVISITN) |>
   pull(.data$AVISIT) |>
   unique()
 
@@ -185,7 +190,7 @@ shift_final <- shift_wide |>
   arrange(factor(.data$AVISIT, levels = visit_levels))
 ```
 
-The same could be attained by creating a function `build_shift_table()` which covers <b>Steps 3-5</b>
+An alternate and tidier approach would be to create a function say `build_shift_table()` to cover <b>Steps 3-5</b>
 
 ```{r}
 #| eval: false
@@ -205,7 +210,7 @@ shift_final <-
 glimpse_dataset(shift_final)
 ```
 
-### 6. Display Table
+### 6. Displaying Final Table with `{gt}`
 
 ::: panel-tabset
 ## Single Parameter
@@ -302,7 +307,7 @@ list_out <-
       param = x,
       group_col = "AVISIT",
       trt_denom = denom_N,
-      title = "Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)", # nolint
+      title = "Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)",
       footnote = "Add footnote here",
       stub_label = "Analysis Visit"
     )
@@ -314,3 +319,8 @@ list_out <-
 walk(seq_along(list_out), \(i) print(list_out[[i]]))
 ```
 :::
+
+```{r}
+#| echo: false
+sessioninfo::session_info("installed")
+```

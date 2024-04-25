@@ -1,17 +1,17 @@
-get_worst_grade <- function(df, grade_var, group_vars) {
-  df |>
-    mutate(temp = case_when(
-      toupper(.data[[grade_var]]) %in% c("H", "HIGH") ~ 3,
-      toupper(.data[[grade_var]]) %in% c("N", "NORMAL") ~ 2,
-      toupper(.data[[grade_var]]) %in% c("L", "LOW") ~ 1,
-      TRUE ~ 0
-    )) |>
-    group_by(!!!syms(group_vars), USUBJID) |>
-    arrange(.data$temp) |>
-    filter(row_number() == n()) |>
-    select(-temp) |>
-    ungroup()
-}
+# get_worst_grade <- function(df, grade_var, group_vars) {
+#   df |>
+#     mutate(temp = case_when(
+#       toupper(.data[[grade_var]]) %in% c("H", "HIGH") ~ 3,
+#       toupper(.data[[grade_var]]) %in% c("N", "NORMAL") ~ 2,
+#       toupper(.data[[grade_var]]) %in% c("L", "LOW") ~ 1,
+#       TRUE ~ 0
+#     )) |>
+#     group_by(!!!syms(group_vars), USUBJID) |>
+#     arrange(.data$temp) |>
+#     filter(row_number() == n()) |>
+#     select(-temp) |>
+#     ungroup()
+# }
 
 get_all_grades <-
   function(df,
@@ -85,7 +85,8 @@ build_shift_table <-
         .data[[trt_var]],
         factor(.data[[base_grade_var]], levels = c(grade_var_order, "Total")),
         factor(
-          .data[[analysis_grade_var]], levels = c(grade_var_order, "Total")
+          .data[[analysis_grade_var]],
+          levels = c(grade_var_order, "Total")
         )
       )
     ## pivot to get values of `base_grade_var` as columns

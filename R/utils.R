@@ -25,9 +25,9 @@ filter_if <- function(df, filter) {
   }
 }
 
-get_trt_N <- function(adsl, trt_var, trt_val) {
+get_trt_denom <- function(adsl, trt_var, trt_val) {
   adsl |>
-    select(-USUBJID) |>
+    select(-all_of(c("USUBJID"))) |>
     distinct() |>
     filter(.data[[trt_var]] == trt_val) |>
     pull()
@@ -92,7 +92,9 @@ tab_display <-
            stub_label = "Analysis Visit") {
     dataset |>
       gt(groupname_col = group_col, row_group_as_column = TRUE) |>
-      cols_label_with(columns = contains("ANRIND"), \(x) md("Reference<br>Range")) |>
+      cols_label_with(
+        columns = contains("ANRIND"), \(x) md("Reference<br>Range")
+      ) |>
       tab_spanner_delim(delim = "^") |>
       text_transform(
         fn = \(x) map(x, \(y) md(y)),
@@ -151,5 +153,5 @@ tab_display <-
       color: gray !important;
     }
     "
-  )
+      )
   }
