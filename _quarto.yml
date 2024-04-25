@@ -15,7 +15,7 @@ website:
         
   sidebar:
     logo: "img/hex-shiftR.png"
-    pinned: false
+    pinned: true
     align: center
     tools: 
       - icon: github
@@ -42,6 +42,7 @@ format:
     toc_float: false
     code-fold: show
     code-overflow: wrap
+    page-layout: full
 
 editor: visual
 
