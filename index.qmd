@@ -1,12 +1,15 @@
 ---
-title: "Tidy Shift Tables in R using {gt}"
+title: "Tidy Shift Tables in R"
+subtitle: "A tidy approach to create Shift Tables using {gt}"
 author: Sukalpo Saha
 date: today
-abstract-title: " What is a Shift Table?"
-abstract: "A shift table is a table that displays the number of subjects who are low, normal or high at baseline and the shift at post-dose. It represents cross frequencies of baseline values with post-dose values."
 ---
 
-<b>Shift Tables in Clinical Trials</b>
+## What is a Shift Table
+
+A shift table is a table that displays the number of subjects with low, normal or high records at baseline and post-dose. It represents cross frequencies of baseline values with post-dose values.
+
+### Shift Tables in Clinical Trials</b>
 
 It is important to look at the effect of the drug by comparing values at baseline and post --baseline in any clinical trials. <b>Shift Table</b> is one of the analysis approaches suggested in <b>E3 Guidelines</b> to show the number of patients who are low, normal, or high at baseline and then at selected time intervals. It's easier to figure out any abnormality in data because the layout helps to get the count of subjects at two time points together. Shift tables can be created for any data like labs, vital signs and ECG etc.
 
@@ -14,9 +17,8 @@ All safety related data is collected in a clinical trial study for safety analys
 
 There are several summary tables commonly used to produce laboratory results. Descriptive statistics, clinical significance, shift tables and toxicity grade summaries are some of the summary tables are some, that are commonly used. The shift table is one of the most frequently requested in a clinical study by statisticians or clinicians. The site that provides the laboratory results usually produces the normal ranges for numeric lab tests. The study team analyzes the lab results based on normal range and then flags or categorizes whether it is low, normal or high.
 
-The main purpose of shift tables in any clinical trial is to determine how the categorical result varies from baseline to post-dose. 
+The main purpose of shift tables in any clinical trial is to determine how the categorical result varies from baseline to post-dose.
 
-<b>Figure 1</b> represents a Shift Table for Hemoglobin Records showing the number of subjects who are low, normal, or high at baseline and post-dose together.
+<b>Figure 1</b> represents a Shift Table for Hemoglobin Records showing the number of subjects with low, normal, or high records at baseline and post-dose together.
 
 ![Figure 1](img/shift.png)
-

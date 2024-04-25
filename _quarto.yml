@@ -5,17 +5,33 @@ website:
   title: "shiftR"
   page-navigation: true
   back-to-top-navigation: true
-  repo-url: https://github.com/ahasoplakus/shifter
+  repo-url: https://github.com/ahasoplakus/shifter/
   repo-branch: main
-  repo-actions: [source, issue]
-  navbar:
-    left:
+  repo-actions: [edit, source]
+
+  page-footer:
+    right: "This page is built with [Quarto](https://quarto.org/)."
+    left: "&copy; CC-By Sukalpo Saha, 2024"
+        
+  sidebar:
+    logo: "img/hex-shiftR.png"
+    pinned: false
+    align: center
+    tools: 
+      - icon: github
+        href: https://github.com/ahasoplakus/
+      - icon: linkedin
+        href: https://www.linkedin.com/in/sukalpo-saha-186329b1/ 
+    style: "docked"
+    search: false
+    collapse-level: 1
+    contents:
       - href: index.qmd
         text: Introduction
       - href: shift.qmd
-        text: Shift Table in R
-     # - href: about.qmd
-      #  icon: question-circle
+        text: Creating a Shift Table in R
+      - href: about.qmd
+        text: References
 
 format:
   html:
@@ -23,10 +39,9 @@ format:
     smooth-scroll: true
     css: styles.css
     toc: true
-    toc-location: left
     toc_float: false
-    page-layout: full
     code-fold: show
+    code-overflow: wrap
 
 editor: visual
 

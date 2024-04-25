@@ -82,7 +82,7 @@ glimpse_dataset <-
     )
   }
 
-tab_display <-
+std_shift_display <-
   function(dataset,
            param,
            group_col = "AVISIT",

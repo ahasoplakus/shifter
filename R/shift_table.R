@@ -49,7 +49,7 @@ summarize_grades <-
       mutate(across("CNT", ~ replace_na(.x, 0)))
   }
 
-build_shift_table <-
+count_shifts <-
   function(bds_dataset,
            trt_var,
            base_grade_var = exprs(BNRIND),

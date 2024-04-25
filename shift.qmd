@@ -1,9 +1,8 @@
 ---
 title: "Creating a Shift Table in R"
-html-table-processing: none
 ---
 
-The workflow below shows a step-by-step programming approach to create Laboratory Shift Tables using the `{tidyverse}` suite for data wrangling, and `{gt}` to create the desired Shift Table layout.
+The workflow below shows a step-by-step programming approach to create Laboratory Shift Tables using the `{tidyverse}` suite for data processing, and `{gt}` to create the desired Shift Table layout.
 
 ## Required Packages
 
@@ -85,9 +84,9 @@ denom_N
 
 ### 2. Preprocessing Lab Records
 
--   Filter out missing values in Baseline Reference Range Indicator (`BNRIND`), Analysis Reference Range Indicator (`ANRIND`) and Analysis Value (`AVAL`)
 -   Merge `adsl_bign` to `adlb` to add `TRT_N`
--   Subset the resulting data for safety subjects where analysis flag is equal to `Y` and at post-dose
+-   Filter out missing values in Baseline Reference Range Indicator (`BNRIND`), Analysis Reference Range Indicator (`ANRIND`) and Analysis Value (`AVAL`)
+-   Subset the resulting data for subjects with post-does records where analysis flag is equal to `'Y'`
 -   Subset data to keep lab records within the desired time period (eg. `Week 2-Week 6`)
 -   Add `BIG N` to treatment labels by concatenating `TRT_N` with `TRT01A`
 
@@ -99,10 +98,10 @@ adlb_prep <- adlb |>
   mutate(across(all_of(c("BNRIND", "ANRIND")), str_to_title)) |>
   left_join(adsl_bign) |>
   filter(
-    .data$ANL01FL == "Y",
-    !is.na(.data$AVAL),
     .data$BNRIND != "<Missing>",
     .data$ANRIND != "<Missing>",
+    !is.na(.data$AVAL),
+    .data$ANL01FL == "Y",
     .data$AVISIT %in% c("Week 2", "Week 4", "Week 6")
   ) |>
   mutate(TRT_VAR = paste0(.data$TRT01A, "<br>(N=", .data$TRT_N, ")")) |>
@@ -123,7 +122,7 @@ glimpse_dataset(adlb_hgb, exprs(USUBJID, TRT01A, TRT_VAR, PARCAT1, PARAM, AVISIT
 
 ### 3. Creating a dummy dataset
 
-Create a dummy dataset that contains a row for each `BNRIND` and corresponding `ANRIND` by Treatment.
+Create a dummy dataset that contains all possible combination of `BNRIND` and `ANRIND` values by Treatment.
 
 ```{r dummy}
 comb_base_pbase <- expand_grid(
@@ -190,12 +189,12 @@ shift_final <- shift_wide |>
   arrange(factor(.data$AVISIT, levels = visit_levels))
 ```
 
-An alternate and tidier approach would be to create a function say `build_shift_table()` to cover <b>Steps 3-5</b>
+An alternate and tidier approach would be to create a function say `count_shifts()` to cover <b>Steps 3-5</b>
 
 ```{r}
 #| eval: false
 shift_final <-
-  build_shift_table(
+  count_shifts(
     bds_dataset = adlb_hgb,
     trt_var = exprs(TRT_VAR),
     analysis_grade_var = exprs(ANRIND),
@@ -213,7 +212,7 @@ glimpse_dataset(shift_final)
 ### 6. Displaying Final Table with `{gt}`
 
 ::: panel-tabset
-## Single Parameter
+## Single Parameter (Hemoglobin)
 
 ```{r display}
 out <-
@@ -281,7 +280,9 @@ out
 
 ## Multiple Parameters
 
-Using `{purrr}` functions to iterate creating Shift Tables
+-   Split `adlb_prep` by multiple parameters.
+-   Map over `count_shifts()` on the data split by parameters
+-   Create a function `std_shift_display()` to combine the table display options and map it over on the `list` of output retrieved from the provious step
 
 ```{r}
 adlb_multi <- adlb_prep |>
@@ -289,7 +290,7 @@ adlb_multi <- adlb_prep |>
   group_nest(.data$PARAM)
 
 shift_out <- map(adlb_multi$data, \(x) {
-  build_shift_table(
+  count_shifts(
     bds_dataset = x,
     trt_var = exprs(TRT_VAR),
     analysis_grade_var = exprs(ANRIND),
@@ -302,7 +303,7 @@ shift_out <- map(adlb_multi$data, \(x) {
 
 list_out <-
   map(names(shift_out), \(x) {
-    tab_display(
+    std_shift_display(
       shift_out[[x]],
       param = x,
       group_col = "AVISIT",
