@@ -319,8 +319,3 @@ list_out <-
 walk(seq_along(list_out), \(i) print(list_out[[i]]))
 ```
 :::
-
-```{r}
-#| echo: false
-sessioninfo::session_info("installed")
-```
