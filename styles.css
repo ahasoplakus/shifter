@@ -25,11 +25,6 @@ p a {
     padding-left: 0px;
 }
 
-.sidebar-item-container {
-    text-transform: uppercase;
-    font-weight: bold;
-}
-
 code {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: 0.875em;
@@ -81,39 +76,9 @@ p,h1,h2,h3,#toc-title,#toc-function-reference,.nav-link,.table {
     padding-top: 3px;
 }
 
-#navbarCollapse > ul.navbar-nav.navbar-nav-scroll.me-auto > li > a:hover {
-    background-color: #BED7DC;
-    color: #003C43;
-    border-radius: 5px;
-}
-
-#navbarCollapse > ul.navbar-nav.navbar-nav-scroll.me-auto > li > a {
-    color: white;
-    font-weight: bold;
-}
-
-.navbar-title {
-    font-family: Inter, Roboto, "Helvetica Neue", "Arial Nova", "Nimbus Sans", Arial, sans-serif;
-    font-weight: bold;
-    color: white;
-    border-style: solid;
-    border-width: 2px;
-    border-radius: 8px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 1px;
-    padding-bottom: 4px;
-}
-
 #quarto-header > nav > div {
     margin-left: 5%;
     margin-right: 5%;
-}
-
-.navbar {
-	background: linear-gradient(-45deg, #E3FEF7, #003C43, #77B0AA, #135D66);
-	background-size: 200% 100%;
-	animation: gradient 15s ease infinite;
 }
 
 @keyframes gradient {
@@ -126,24 +91,4 @@ p,h1,h2,h3,#toc-title,#toc-function-reference,.nav-link,.table {
 	100% {
 		background-position: 0% 50%;
 	}
-}
-
-#navbarCollapse > ul.navbar-nav.navbar-nav-scroll.ms-auto > li > a {
-    color: white;
-    font-weight: bold;
-    border-radius: 3px;
-    height: 100%;
-    vertical-align: middle;
-}
-
-#navbarCollapse > ul.navbar-nav.navbar-nav-scroll.ms-auto > li {
-    padding-right: 5px
-}
-
-#quarto-search > div > button {
-    background-color: #BED7DC;
-    border-radius: 50px;
-    width: 100%;
-    padding-right: 7px;
-    vertical-align: middle;
 }
