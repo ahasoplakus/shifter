@@ -207,7 +207,7 @@ std_shift_display <-
       border-top-style: hidden !important;
     }
     .gt_table {
-      width: max-content !important;
+      width: 135% !important;
     }
     .gt_subtitle {
       text-align: left !important;
