@@ -1,7 +1,9 @@
+# convert expressions to vectors
 expr2var <- function(expressions) {
   set_names(map_chr(expressions, as_string), names(expressions))
 }
 
+# replace `NA_character_` values with "<Missing>" 
 na_to_missing <- function(df) {
   df |>
     mutate(across(
@@ -17,14 +19,7 @@ na_to_missing <- function(df) {
     ))
 }
 
-filter_if <- function(df, filter) {
-  if (is.null(filter)) {
-    df
-  } else {
-    filter(df, !!filter)
-  }
-}
-
+# get treatment totals
 get_trt_denom <- function(adsl, trt_var, trt_val) {
   adsl |>
     select(-all_of(c("USUBJID"))) |>
@@ -33,12 +28,14 @@ get_trt_denom <- function(adsl, trt_var, trt_val) {
     pull()
 }
 
+# glue percentages to numeric values
 add_pct <- function(x, denom, digits = 2) {
   map_chr(x, ~ ifelse(as.numeric(.x) > 0, paste0(
     .x, " (", round(as.numeric(.x) / denom * 100, digits), "%)"
   ), .x))
 }
 
+# view intermediate datasets with `DT` extensions
 glimpse_dataset <-
   function(dataset,
            display_vars = NULL,
@@ -82,6 +79,7 @@ glimpse_dataset <-
     )
   }
 
+# standard shift table display function
 std_shift_display <-
   function(dataset,
            param,
