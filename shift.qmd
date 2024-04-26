@@ -155,7 +155,7 @@ comb_base_pbase <- expand_grid(
 glimpse_dataset(comb_base_pbase)
 ```
 
-### 4. Getting Counts per Analysis Visit
+### 4. Performing Counts by Analysis Visit
 
 ```{r count}
 shift_counts <- adlb_hgb |>
@@ -178,7 +178,10 @@ shift_counts <- adlb_hgb |>
 glimpse_dataset(shift_counts)
 ```
 
-### 5. Reshaping Data and adding Total Counts
+### 5. Reshaping Data
+
+-   Reshaping data to wide format to get the final Shift Table layout
+-   Adding Post-Baseline Grade Totals
 
 ```{r reshape}
 shift_wide <- shift_counts |>

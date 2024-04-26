@@ -15,13 +15,14 @@ website:
         
   sidebar:
     logo: "img/hex-shiftR.png"
+    background: light
     pinned: true
     align: center
     tools: 
       - icon: github
         href: https://github.com/ahasoplakus/
     style: "docked"
-    search: false
+    search: true
     collapse-level: 1
     contents:
       - href: index.qmd

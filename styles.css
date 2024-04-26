@@ -6,6 +6,10 @@ div.dt-button-collection {
     border: 5px solid rgba(0, 0, 0, 0.4) !important;
 }
 
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-bg-type: #ffffff !important;
+}
+
 a {
     color: #43b399;
     text-decoration: underline;
@@ -26,7 +30,7 @@ p a {
 }
 
 .sidebar.sidebar-navigation:not(.rollup) {
-    box-shadow: 2px 0 5px 0 #555 !important;
+    box-shadow: 2px 0 5px 0 #3c8feb !important;
 }
 
 .table td {
