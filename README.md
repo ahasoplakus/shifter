@@ -2,7 +2,9 @@
 
 [![](https://github.com/ahasoplakus/shifter/actions/workflows/publish.yml/badge.svg)](https://github.com/ahasoplakus/shifter/actions/workflows/publish.yml)
 
-A tidy approach to create Shift Tables using `{gt}`
+## About
+
+This project is intended for Posit 2024 Table Contest. It represents a `{tidy}` approach to create <b>Shift Tables</b> used in Clinical Trials in R using [tidyverse](https://www.tidyverse.org/packages/) and [gt](https://gt.rstudio.com/)
 
 ## What is a Shift Table?
 
@@ -17,10 +19,6 @@ It is important to look at the effect of the drug by comparing values at baselin
 All safety related data is collected in a clinical trial study for safety analysis. The laboratory data is one of the most important assessments for safety consideration.
 
 There are several summary tables commonly used to present laboratory results; Descriptive statistics, CTCAE summaries and Shift Tables are some of the most widely used ones. The shift table is one of the most frequently requested outputs in a clinical study by statisticians or clinicians.
-
-## R Packages
-
-Data was processed using the [tidyverse](https://www.tidyverse.org/packages/) suite and [gt](https://gt.rstudio.com/) was used to create the table layout.
 
 ## Website
 
