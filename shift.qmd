@@ -2,7 +2,7 @@
 title: "Creating a Shift Table in R"
 ---
 
-The workflow below shows a step-by-step programming approach to create Laboratory Shift Tables using the `{tidyverse}` suite for data processing, and `{gt}` to create the desired Shift Table layout.
+The workflow below shows a step-by-step programming approach to create Shift Tables for Laboratory recrds using the `{tidyverse}` suite for data processing, and `{gt}` to create the desired Shift Table layout.
 
 ## Required Packages
 
@@ -51,7 +51,21 @@ glimpse_dataset(slice_head(adlb, n = 500))
 ```
 :::
 
-## Programming Steps
+## Variables used for Analysis
+
+-   USUBJID - Unique Subject Identifier
+-   SAFFL - Safety Population Flag
+-   TRT01A - Actual Treatment Arm for Period 01
+-   PARAM - Parameter
+-   PARAMCD - Parameter Code
+-   AVISIT - Analysis Visit
+-   AVISITN - Analysis Visit (Numeric)
+-   AVAL - Analysis Value
+-   ANL01FL - Analysis Flag 01
+-   BNRIND - Baseline Reference Range Indicator
+-   ANRIND - Analysis Reference Range Indicator
+
+## Programming Flow
 
 ### 1. Calculating BIG N (Treatment Totals)
 
@@ -221,6 +235,7 @@ out <-
   cols_label_with(columns = contains("ANRIND"), \(x) md("Reference<br>Range")) |>
   tab_spanner_delim(delim = "^") |>
   text_transform(fn = \(x) map(x, \(y) md(y)), locations = cells_column_spanners()) |>
+  # calculate percentages
   text_transform(
     fn = \(x) add_pct(x, denom_N[[1]], 1),
     locations = cells_body(columns = 3:6)
@@ -233,12 +248,14 @@ out <-
     fn = \(x) add_pct(x, denom_N[[3]], 1),
     locations = cells_body(columns = 11:14)
   ) |>
+  # headers and footers
   tab_stubhead(md("Analysis Visit")) |>
   tab_footnote(footnote = "This is a footnote") |>
   tab_header(
-    title = md("Protocol: xxxx<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"), # nolint
+    title = md("Protocol: xxxx<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"),
     subtitle = paste0("Parameter = ", unique(pull(adlb_hgb, "PARAM")))
   ) |>
+  # cell styling
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_body(columns = 2)
@@ -251,6 +268,7 @@ out <-
     style = cell_text(align = "center"),
     locations = cells_column_labels(columns = -c(1, 2))
   ) |>
+  # other options
   tab_options(
     table.background.color = "white",
     table.font.names = "monospace-slab-serif",

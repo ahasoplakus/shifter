@@ -10,7 +10,7 @@ website:
   repo-actions: [edit, source]
 
   page-footer:
-    right: "This page is built with [Quarto](https://quarto.org/)."
+    right: "This site is built with [Quarto](https://quarto.org/)."
     left: "&copy; CC-By Sukalpo Saha, 2024"
         
   sidebar:
@@ -20,8 +20,6 @@ website:
     tools: 
       - icon: github
         href: https://github.com/ahasoplakus/
-      - icon: linkedin
-        href: https://www.linkedin.com/in/sukalpo-saha-186329b1/ 
     style: "docked"
     search: false
     collapse-level: 1

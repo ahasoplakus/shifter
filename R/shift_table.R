@@ -1,18 +1,14 @@
-# get_worst_grade <- function(df, grade_var, group_vars) {
-#   df |>
-#     mutate(temp = case_when(
-#       toupper(.data[[grade_var]]) %in% c("H", "HIGH") ~ 3,
-#       toupper(.data[[grade_var]]) %in% c("N", "NORMAL") ~ 2,
-#       toupper(.data[[grade_var]]) %in% c("L", "LOW") ~ 1,
-#       TRUE ~ 0
-#     )) |>
-#     group_by(!!!syms(group_vars), USUBJID) |>
-#     arrange(.data$temp) |>
-#     filter(row_number() == n()) |>
-#     select(-temp) |>
-#     ungroup()
-# }
-
+#' Create a dummy dataset to get all combonations of Baseline and Analysis Range Indicators
+#'
+#' @param df
+#' @param trt_var Treatment Variable
+#' @param visit_var Visit Variable
+#' @param analysis_grade_var Analysis Range Indicator (`ANRIND`)
+#' @param base_grade_var Reference Range Indiacator (`BNRIND`)
+#' @param grade_var_order Sorting order of Range Indicator values
+#'
+#' @return `data.frame`
+#'
 get_all_grades <-
   function(df,
            trt_var,
@@ -23,13 +19,25 @@ get_all_grades <-
     expand_grid(
       !!trt_var := unique(df[[trt_var]]),
       !!visit_var := intersect(
-        levels(as.factor(df[[visit_var]])), unique(df[[visit_var]])
+        levels(as.factor(df[[visit_var]])),
+        unique(df[[visit_var]])
       ),
       !!base_grade_var := as.factor(c(grade_var_order, "Total"))
     ) |>
       cross_join(tibble(!!analysis_grade_var := as.factor(grade_var_order)))
   }
 
+#' Summarize Grades by Visit
+#'
+#' @param df Input dataset
+#' @param comb_df Dummy dataset having all combinations of Range Indicators
+#' @param trt_var Treatment Variable
+#' @param group_vars Grouping Variables based on which grades will be summarized
+#' @param analysis_grade_var Analysis Range Indicator (`ANRIND`)
+#' @param base_grade_var Reference Range Indiacator (`BNRIND`)
+#'
+#' @return `data.frame`
+#'
 summarize_grades <-
   function(df,
            comb_df,
@@ -49,6 +57,17 @@ summarize_grades <-
       mutate(across("CNT", ~ replace_na(.x, 0)))
   }
 
+#' Count Shifts by Visit
+#'
+#' @param bds_dataset Input analysis dataset
+#' @param trt_var Treatment Variable
+#' @param base_grade_var Reference Range Indiacator (`BNRIND`)
+#' @param analysis_grade_var Analysis Range Indicator (`ANRIND`)
+#' @param grade_var_order Sorting order of Range Indicator values
+#' @param visit_var Visit variable
+#'
+#' @return `data.frame`
+#'
 count_shifts <-
   function(bds_dataset,
            trt_var,
