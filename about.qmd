@@ -2,7 +2,7 @@
 title: ""
 ---
 
-<b>References<b/>
+<b>References</b>
 
 - [ICH E3 Structure and Content of Clinical Study Report](https://www.ema.europa.eu/en/documents/scientific-guideline/ich-e-3-structure-and-content-clinical-study-reports-step-5_en.pdf)
 - [An Effective way to produce a Shift Table](https://www.lexjansen.com/pharmasug-cn/2016/PG/PharmaSUG-China-2016-PG05.pdf)
