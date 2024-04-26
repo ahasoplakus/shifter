@@ -1,4 +1,4 @@
-# shiftR ![](img/hex-shiftR.png){fig-align="right" width="240"}
+# shiftR <img src="img/hex-shiftR.png" align="right" width="200"/>
 
 [![Render and Publish](https://github.com/ahasoplakus/shifter/actions/workflows/publish.yml/badge.svg)](https://github.com/ahasoplakus/shifter/actions/workflows/publish.yml)
 
