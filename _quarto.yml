@@ -21,6 +21,10 @@ website:
     tools: 
       - icon: github
         href: https://github.com/ahasoplakus/
+      - icon: linkedin
+        href: https://www.linkedin.com/in/sukalpo-saha-186329b1/
+      - icon: laptop
+        text: Pfizer
     style: "docked"
     search: true
     collapse-level: 1
