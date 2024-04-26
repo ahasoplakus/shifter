@@ -141,13 +141,10 @@ Create a dummy dataset that contains all possible combination of `BNRIND` and `A
 ```{r dummy}
 comb_base_pbase <- expand_grid(
   TRT_VAR = unique(adlb_hgb[["TRT_VAR"]]),
-  AVISIT = intersect(
-    levels(as.factor(adlb_hgb[["AVISIT"]])),
-    unique(adlb_hgb[["AVISIT"]])
-  ),
-  BNRIND = as.factor(c("Low", "Normal", "High", "Total"))
+  AVISIT = unique(adlb_hgb[["AVISIT"]]),
+  BNRIND = c("Low", "Normal", "High", "Total")
 ) |>
-  cross_join(tibble(ANRIND = as.factor(c("Low", "Normal", "High"))))
+  cross_join(tibble(ANRIND = c("Low", "Normal", "High")))
 ```
 
 ```{r}
@@ -168,8 +165,7 @@ shift_counts <- adlb_hgb |>
   mutate(across("CNT", ~ replace_na(.x, 0))) |>
   arrange(
     .data[["TRT_VAR"]],
-    factor(.data[["BNRIND"]], levels = c("Low", "Normal", "High", "Total")),
-    factor(.data[["ANRIND"]], levels = c("Low", "Normal", "High", "Total"))
+    factor(.data[["BNRIND"]], levels = c("Low", "Normal", "High", "Total"))
   )
 ```
 
@@ -203,7 +199,10 @@ visit_levels <-
 
 shift_final <- shift_wide |>
   bind_rows(post_base_grade_totals) |>
-  arrange(factor(.data$AVISIT, levels = visit_levels))
+  arrange(
+    factor(.data$AVISIT, levels = visit_levels),
+    factor(.data$ANRIND, levels = c("Low", "Normal", "High", "Total"))
+  )
 ```
 
 An alternate and tidier approach would be to create a function say `count_shifts()` to cover <b>Steps 3-5</b>
@@ -255,7 +254,7 @@ out <-
   tab_stubhead(md("Analysis Visit")) |>
   tab_footnote(footnote = "This is a footnote") |>
   tab_header(
-    title = md("Protocol: xxxx<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"),
+    title = md("Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"),
     subtitle = paste0("Parameter = ", unique(pull(adlb_hgb, "PARAM")))
   ) |>
   # cell styling
@@ -324,15 +323,15 @@ shift_out <- map(adlb_multi$data, \(x) {
 
 list_out <-
   map(names(shift_out), \(x) {
-    std_shift_display(
-      shift_out[[x]],
-      param = x,
-      group_col = "AVISIT",
-      trt_denom = denom_N,
-      title = "Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)",
-      footnote = "Add footnote here",
-      stub_label = "Analysis Visit"
-    )
+    shift_out[[x]] |>
+      std_shift_display(
+        param = x,
+        group_col = "AVISIT",
+        trt_denom = denom_N,
+        title = "Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)",
+        footnote = "Add footnote here",
+        stub_label = "Analysis Visit"
+      )
   })
 ```
 

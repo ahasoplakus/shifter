@@ -18,13 +18,10 @@ get_all_grades <-
            grade_var_order) {
     expand_grid(
       !!trt_var := unique(df[[trt_var]]),
-      !!visit_var := intersect(
-        levels(as.factor(df[[visit_var]])),
-        unique(df[[visit_var]])
-      ),
-      !!base_grade_var := as.factor(c(grade_var_order, "Total"))
+      !!visit_var := unique(df[[visit_var]]),
+      !!base_grade_var := c(grade_var_order, "Total")
     ) |>
-      cross_join(tibble(!!analysis_grade_var := as.factor(grade_var_order)))
+      cross_join(tibble(!!analysis_grade_var := grade_var_order))
   }
 
 #' Summarize Grades by Visit
@@ -102,11 +99,7 @@ count_shifts <-
       ) |>
       arrange(
         .data[[trt_var]],
-        factor(.data[[base_grade_var]], levels = c(grade_var_order, "Total")),
-        factor(
-          .data[[analysis_grade_var]],
-          levels = c(grade_var_order, "Total")
-        )
+        factor(.data[[base_grade_var]], levels = c(grade_var_order, "Total"))
       )
     ## pivot to get values of `base_grade_var` as columns
     grade_counts_wide <- grade_counts |>
@@ -132,5 +125,8 @@ count_shifts <-
     # adding `base_grade_var` total to main data frame
     grade_counts_wide |>
       bind_rows(post_base_grade_totals) |>
-      arrange(factor(.data[[visit_var[1]]], levels = visit_levels))
+      arrange(
+        factor(.data[[visit_var[1]]], levels = visit_levels),
+        factor(.data[[analysis_grade_var]], levels = c(grade_var_order, "Total"))
+      )
   }
