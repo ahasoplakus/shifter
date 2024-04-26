@@ -18,6 +18,10 @@ All safety related data is collected in a clinical trial study for safety analys
 
 There are several summary tables commonly used to present laboratory results; Descriptive statistics, CTCAE summaries and Shift Tables are some of the most widely used ones. The shift table is one of the most frequently requested outputs in a clinical study by statisticians or clinicians.
 
+## R Packages
+
+Data was processed using the [tidyverse](https://www.tidyverse.org/packages/) suite and [gt](https://gt.rstudio.com/) was used to create the table layout.
+
 ## Website
 
 -   [Quarto-Pub](https://ahasoplakus.quarto.pub/shift2r/)
