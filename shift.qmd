@@ -2,7 +2,7 @@
 title: "Creating a Shift Table in R"
 ---
 
-The workflow below shows a step-by-step programming approach to create Shift Tables for Laboratory recrds using the `{tidyverse}` suite for data processing, and `{gt}` to create the desired Shift Table layout.
+The workflow below shows a step-by-step programming approach to create Shift Tables for Laboratory records using the `{tidyverse}` suite for data processing, and `{gt}` to create the desired Shift Table layout.
 
 ## Required Packages
 
@@ -16,6 +16,7 @@ suppressPackageStartupMessages(library(stringr))
 suppressPackageStartupMessages(library(gt))
 suppressPackageStartupMessages(library(here))
 
+# Source all R scripts from https://github.com/ahasoplakus/shifter/tree/main/R
 walk(list.files(here("R"), pattern = ".R", full.names = TRUE), source)
 ```
 
@@ -302,7 +303,7 @@ out
 
 -   Split `adlb_prep` by multiple parameters.
 -   Map over `count_shifts()` on the data split by parameters
--   Create a function `std_shift_display()` to combine the table display options and map it over on the `list` of output retrieved from the provious step
+-   Create a function `std_shift_display()` to combine the table display options and map it over on the `list` output retrieved from the previous step
 
 ```{r}
 adlb_multi <- adlb_prep |>
