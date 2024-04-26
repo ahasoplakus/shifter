@@ -6,6 +6,11 @@ div.dt-button-collection {
     border: 5px solid rgba(0, 0, 0, 0.4) !important;
 }
 
+a {
+    color: #43b399;
+    text-decoration: underline;
+}
+
 .table a {
     text-underline-offset: 4px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -17,8 +22,11 @@ div.dt-button-collection {
 }
 
 p a {
-    color: black;
     text-underline-offset: 4px;
+}
+
+.sidebar.sidebar-navigation:not(.rollup) {
+    box-shadow: 2px 0 5px 0 #555 !important;
 }
 
 .table td {
