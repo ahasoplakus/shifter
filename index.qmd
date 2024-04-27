@@ -20,6 +20,6 @@ All safety related data is collected in a clinical trial study for safety analys
 There are several summary tables commonly used to present laboratory results; Descriptive statistics, CTCAE summaries 
 and Shift Tables are some of the most widely used ones. The shift table is one of the most frequently requested outputs in a clinical study by statisticians or clinicians.
 
-<b>Figure 1</b> represents a Shift Table showing the number of subjects with low, normal, or high <b>Hemoglobin</b> records at baseline and post-dose together.
+<b>Figure 1</b> represents a <b>SAS</b> generated Shift Table showing the number of subjects with low, normal, or high <b>Hemoglobin</b> records at baseline and post-dose together.
 
 ![Figure 1](img/shift.png)

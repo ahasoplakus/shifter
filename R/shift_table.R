@@ -1,6 +1,7 @@
-#' Create a dummy dataset to get all combonations of Baseline and Analysis Range Indicators
+#' Create a dummy dataset to get all combonations of Baseline and Analysis
+#' Range Indicators
 #'
-#' @param df
+#' @param df Input dataset
 #' @param trt_var Treatment Variable
 #' @param visit_var Visit Variable
 #' @param analysis_grade_var Analysis Range Indicator (`ANRIND`)
@@ -107,7 +108,7 @@ count_shifts <-
         id_cols = all_of(c(visit_var[1], analysis_grade_var)),
         names_from = all_of(c(trt_var, base_grade_var)),
         values_from = "CNT",
-        names_sep = "<br>Baseline<br>n (%)^"
+        names_sep = "^"
       )
     # calculating the row group total of `analysis_grade_var`
     post_base_grade_totals <- grade_counts_wide |>
@@ -139,7 +140,6 @@ count_shifts <-
 #' @param dataset Input dataset as `data.frame`
 #' @param param Parameter Label
 #' @param group_col Row Grouping Column
-#' @param trt_denom Named `list` of Treatment Totals
 #' @param title Table Title
 #' @param footnote Table Footnote
 #' @param stub_label Stub Header
@@ -150,7 +150,6 @@ std_shift_display <-
   function(dataset,
            param = "",
            group_col = "AVISIT",
-           trt_denom,
            title = "",
            footnote = "This is a footnote",
            stub_label = "Analysis Visit") {
@@ -161,20 +160,8 @@ std_shift_display <-
       ) |>
       tab_spanner_delim(delim = "^") |>
       text_transform(
-        fn = \(x) map(x, \(y) md(y)),
+        fn = \(x) map(x, \(y) md(paste0(y, "<br>Baseline<br>n (%)"))),
         locations = cells_column_spanners()
-      ) |>
-      text_transform(
-        fn = \(x) add_pct(x, trt_denom[[1]], 1),
-        locations = cells_body(columns = 3:6)
-      ) |>
-      text_transform(
-        fn = \(x) add_pct(x, trt_denom[[2]], 1),
-        locations = cells_body(columns = 7:10)
-      ) |>
-      text_transform(
-        fn = \(x) add_pct(x, trt_denom[[3]], 1),
-        locations = cells_body(columns = 11:14)
       ) |>
       tab_stubhead(md(stub_label)) |>
       tab_footnote(footnote = footnote) |>

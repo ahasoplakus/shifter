@@ -20,19 +20,27 @@ na_to_missing <- function(df) {
 }
 
 # get treatment totals
-get_trt_denom <- function(adsl, trt_var, trt_val) {
+get_trt_total <- function(adsl, trt_vars, trt_val) {
+  trt_vars <- expr2var(trt_vars)
   adsl |>
-    select(-all_of(c("USUBJID"))) |>
+    select(all_of(c(trt_vars))) |>
     distinct() |>
-    filter(.data[[trt_var]] == trt_val) |>
+    filter(.data[[trt_vars[1]]] == trt_val) |>
     pull()
 }
 
-# glue percentages to numeric values
-add_pct <- function(x, denom, digits = 2) {
-  map_chr(x, ~ ifelse(as.numeric(.x) > 0, paste0(
-    .x, " (", round(as.numeric(.x) / denom * 100, digits), "%)"
-  ), .x))
+# calculate percentages
+add_pct <- function(x, denom, digits = 1) {
+  if_else(x > 0, paste0(x, " (", round(x / denom * 100, digits), "%)"), as.character(x))
+}
+
+# glue percentages to numeric values within cells
+num_to_pct <- function(dataset, denom, digits = 1) {
+  bind_cols(map(names(denom), \(cols) {
+    dataset |>
+      select(matches(cols)) |>
+      mutate(across(everything(), \(y) add_pct(y, denom[[cols]], digits)))
+  }))
 }
 
 # view intermediate datasets with `DT` extensions

@@ -2,7 +2,8 @@
 title: "Creating a Shift Table in R"
 ---
 
-Here is a workflow to create a Shift Table in R, using the `{tidyverse}` suite for data processing, and `{gt}` to build the desired table layout.
+Here is a workflow to create a Shift Table in R, using the `{tidyverse}` suite
+for data processing, and `{gt}` to build the desired table layout.
 
 ## Required Packages
 
@@ -16,13 +17,17 @@ suppressPackageStartupMessages(library(stringr))
 suppressPackageStartupMessages(library(gt))
 suppressPackageStartupMessages(library(here))
 
-# Source all R scripts from https://github.com/ahasoplakus/shifter/tree/main/R
-walk(list.files(here("R"), pattern = ".R", full.names = TRUE), source)
+# some user defined functions are in paths below
+files <- list.files(here("R"), pattern = ".R", full.names = TRUE)
+files
+# Read all files
+walk(files, source)
 ```
 
 ## Data used for Analysis
 
-We will make use of the `adsl` and `adlb` test <b>ADaM</b> datasets from the [{pharmaverseadam}](https://github.com/pharmaverse/pharmaverseadam) R package for analysis.
+We will make use of the `adsl` and `adlb` test <b>ADaM</b> datasets from the [{pharmaverseadam}](https://github.com/pharmaverse/pharmaverseadam) R package
+for analysis.
 
 ::: panel-tabset
 ## ADSL
@@ -86,23 +91,15 @@ adsl_bign <- adsl |>
 glimpse_dataset(adsl_bign)
 ```
 
-Get distinct treatment totals to
-
--   Display total number of subjects in each treatment group at top level of the report
--   Use as denominator to calculate count percentages in the final table
-
-```{r}
-denom_N <-
-  map(set_names(unique(adsl_bign[["TRT01A"]])), ~ get_trt_denom(adsl_bign, "TRT01A", .x))
-denom_N
-```
-
 ### 2. Preprocessing Lab Records
 
 -   Merge `adsl_bign` to `adlb` to add `TRT_N`
--   Filter out missing values in Baseline Reference Range Indicator (`BNRIND`), Analysis Reference Range Indicator (`ANRIND`) and Analysis Value (`AVAL`)
--   Subset the resulting data for subjects with post-does records where analysis flag is equal to `'Y'`
--   Subset data to keep lab records within the desired time period (eg. `Week 2-Week 6`)
+-   Filter out missing values in Baseline Reference Range Indicator (`BNRIND`),
+Analysis Reference Range Indicator (`ANRIND`) and Analysis Value (`AVAL`)
+-   Subset the resulting data for subjects with post-does records where analysis
+flag is equal to `'Y'`
+-   Subset data to keep lab records within the desired time period
+(eg. `Week 2-Week 6`)
 -   Add `BIG N` to treatment labels by concatenating `TRT_N` with `TRT01A`
 
 ```{r prep_adlb}
@@ -132,12 +129,16 @@ adlb_hgb <- adlb_prep |>
 
 ```{r}
 #| echo: false
-glimpse_dataset(adlb_hgb, exprs(USUBJID, TRT01A, TRT_VAR, PARCAT1, PARAM, AVISIT, BNRIND, ANRIND, AVAL))
+glimpse_dataset(
+  adlb_hgb,
+  exprs(USUBJID, TRT01A, TRT_VAR, PARCAT1, PARAM, AVISIT, BNRIND, ANRIND, AVAL)
+)
 ```
 
 ### 3. Get all combinations of Range Indicator values
 
-Create a dummy dataset that contains all possible combination of `BNRIND` and `ANRIND` values by Treatment and Visit.
+Create a dummy dataset that contains all possible combination of `BNRIND`
+and `ANRIND` values by Treatment and Visit.
 
 ```{r dummy}
 comb_base_pbase <- expand_grid(
@@ -186,7 +187,7 @@ shift_wide <- shift_counts |>
     id_cols = all_of(c("AVISIT", "ANRIND")),
     names_from = all_of(c("TRT_VAR", "BNRIND")),
     values_from = "CNT",
-    names_sep = "<br>Baseline<br>n (%)^"
+    names_sep = "^"
   )
 
 post_base_grade_totals <- shift_wide |>
@@ -206,7 +207,8 @@ shift_final <- shift_wide |>
   )
 ```
 
-An alternate and tidier approach would be to create a function say `count_shifts()` to cover <b>Steps 3-5</b>
+An alternate and tidier approach would be to create a function say
+`count_shifts()` to cover <b>Steps 3-5</b>
 
 ```{r}
 #| eval: false
@@ -226,7 +228,26 @@ shift_final <-
 glimpse_dataset(shift_final)
 ```
 
-### 6. Displaying Final Table with `{gt}`
+### 6. Add percentages
+
+```{r pct}
+trt_bign <-
+  map(
+    set_names(unique(adsl_bign[["TRT01A"]])),
+    \(trt_val) get_trt_total(adsl_bign, exprs(TRT01A, TRT_N), trt_val)
+  )
+
+shift_final <- shift_final |>
+  select(where(is.character)) |>
+  bind_cols(num_to_pct(shift_final, trt_bign))
+```
+
+```{r}
+#| echo: false
+glimpse_dataset(shift_final)
+```
+
+### 7. Displaying Final Table with `{gt}`
 
 ::: panel-tabset
 ## Single Parameter (Hemoglobin)
@@ -235,27 +256,22 @@ glimpse_dataset(shift_final)
 out <-
   shift_final |>
   gt(groupname_col = "AVISIT", row_group_as_column = TRUE) |>
-  cols_label_with(columns = contains("ANRIND"), \(x) md("Reference<br>Range")) |>
+  cols_label_with(
+    columns = contains("ANRIND"), \(x) md("Reference<br>Range")
+  ) |>
   tab_spanner_delim(delim = "^") |>
-  text_transform(fn = \(x) map(x, \(y) md(y)), locations = cells_column_spanners()) |>
-  # calculate percentages
   text_transform(
-    fn = \(x) add_pct(x, denom_N[[1]], 1),
-    locations = cells_body(columns = 3:6)
-  ) |>
-  text_transform(
-    fn = \(x) add_pct(x, denom_N[[2]], 1),
-    locations = cells_body(columns = 7:10)
-  ) |>
-  text_transform(
-    fn = \(x) add_pct(x, denom_N[[3]], 1),
-    locations = cells_body(columns = 11:14)
+    fn = \(x) map(x, \(y) md(paste0(y, "<br>Baseline<br>n (%)"))),
+    locations = cells_column_spanners()
   ) |>
   # headers and footers
   tab_stubhead(md("Analysis Visit")) |>
   tab_footnote(footnote = "This is a footnote") |>
   tab_header(
-    title = md("Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"),
+    title = md(
+      "Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab
+      Hematology<br>(Full Safety Analysis Set)"
+    ),
     subtitle = paste0("Parameter = ", unique(pull(adlb_hgb, "PARAM")))
   ) |>
   # cell styling
@@ -303,7 +319,8 @@ out
 
 -   Split `adlb_prep` by multiple parameters.
 -   Map over `count_shifts()` on the data split by parameters
--   Create a function `std_shift_display()` to combine the table display options and map it over on the `list` output retrieved from the previous step
+-   Create a function `std_shift_display()` to combine the `{gt}` table display
+steps and map it over on the `list` output retrieved from the previous step
 
 ```{r}
 adlb_multi <- adlb_prep |>
@@ -322,14 +339,21 @@ shift_out <- map(adlb_multi$data, \(x) {
 }) |>
   set_names(adlb_multi$PARAM)
 
+# add percentages
+shift_out <- map(shift_out, \(df) {
+  df |>
+    select(where(is.character)) |>
+    bind_cols(num_to_pct(df, trt_bign))
+})
+
 list_out <-
   map(names(shift_out), \(x) {
     shift_out[[x]] |>
       std_shift_display(
         param = x,
         group_col = "AVISIT",
-        trt_denom = denom_N,
-        title = "Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)",
+        title = "Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab
+        Hematology<br>(Full Safety Analysis Set)",
         footnote = "Add footnote here",
         stub_label = "Analysis Visit"
       )
