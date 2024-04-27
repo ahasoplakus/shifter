@@ -17,9 +17,8 @@ suppressPackageStartupMessages(library(stringr))
 suppressPackageStartupMessages(library(gt))
 suppressPackageStartupMessages(library(here))
 
-# some user defined functions are in paths below
+# some user defined functions are in the files below
 files <- list.files(here("R"), pattern = ".R", full.names = TRUE)
-files
 # Read all files
 walk(files, source)
 ```
