@@ -2,7 +2,7 @@
 title: "Creating a Shift Table in R"
 ---
 
-The workflow below shows a step-by-step programming approach to create Shift Tables for Laboratory records using the `{tidyverse}` suite for data processing, and `{gt}` to create the desired Shift Table layout.
+Here is a workflow to create a Shift Table in R, using the `{tidyverse}` suite for data processing, and `{gt}` to build the desired table layout.
 
 ## Required Packages
 
@@ -135,9 +135,9 @@ adlb_hgb <- adlb_prep |>
 glimpse_dataset(adlb_hgb, exprs(USUBJID, TRT01A, TRT_VAR, PARCAT1, PARAM, AVISIT, BNRIND, ANRIND, AVAL))
 ```
 
-### 3. Creating a dummy dataset
+### 3. Get all combinations of Range Indicator values
 
-Create a dummy dataset that contains all possible combination of `BNRIND` and `ANRIND` values by Treatment.
+Create a dummy dataset that contains all possible combination of `BNRIND` and `ANRIND` values by Treatment and Visit.
 
 ```{r dummy}
 comb_base_pbase <- expand_grid(

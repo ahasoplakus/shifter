@@ -127,7 +127,10 @@ count_shifts <-
       bind_rows(post_base_grade_totals) |>
       arrange(
         factor(.data[[visit_var[1]]], levels = visit_levels),
-        factor(.data[[analysis_grade_var]], levels = c(grade_var_order, "Total"))
+        factor(
+          .data[[analysis_grade_var]],
+          levels = c(grade_var_order, "Total")
+        )
       )
   }
 

@@ -30,7 +30,7 @@ p a {
 }
 
 .sidebar.sidebar-navigation:not(.rollup) {
-    box-shadow: 2px 0 5px 0 #3c8feb !important;
+    box-shadow: 2px 0 5px 0 #606060 !important;
 }
 
 .table td {

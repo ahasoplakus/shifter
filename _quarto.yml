@@ -23,10 +23,8 @@ website:
         href: https://github.com/ahasoplakus/
       - icon: linkedin
         href: https://www.linkedin.com/in/sukalpo-saha-186329b1/
-      - icon: slack
-        href: https://pharmaverse.slack.com/team/U058GB5CXC4
-      - icon: laptop
-        text: Pfizer
+      - icon: twitter
+        href: https://twitter.com/saha_sukalpo/
     style: "docked"
     search: true
     collapse-level: 1
