@@ -14,7 +14,7 @@
     "href": "shift.html#required-packages",
     "title": "Creating a Shift Table in R",
     "section": "Required Packages",
-    "text": "Required Packages\n\n\nCode\nsuppressPackageStartupMessages(library(dplyr))\nsuppressPackageStartupMessages(library(tidyr))\nsuppressPackageStartupMessages(library(rlang))\nsuppressPackageStartupMessages(library(purrr))\nsuppressPackageStartupMessages(library(stringr))\nsuppressPackageStartupMessages(library(gt))\nsuppressPackageStartupMessages(library(here))\n\n# some user defined functions are in paths below\nfiles &lt;- list.files(here(\"R\"), pattern = \".R\", full.names = TRUE)\nfiles\n\n\n[1] \"D:/a/shifter/shifter/R/shift_table.R\"\n[2] \"D:/a/shifter/shifter/R/utils.R\"      \n\n\nCode\n# Read all files\nwalk(files, source)",
+    "text": "Required Packages\n\n\nCode\nsuppressPackageStartupMessages(library(dplyr))\nsuppressPackageStartupMessages(library(tidyr))\nsuppressPackageStartupMessages(library(rlang))\nsuppressPackageStartupMessages(library(purrr))\nsuppressPackageStartupMessages(library(stringr))\nsuppressPackageStartupMessages(library(gt))\nsuppressPackageStartupMessages(library(here))\n\n# some user defined functions are in the files below\nfiles &lt;- list.files(here(\"R\"), pattern = \".R\", full.names = TRUE)\n# Read all files\nwalk(files, source)",
     "crumbs": [
       "Creating a Shift Table in R"
     ]
