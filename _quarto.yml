@@ -32,7 +32,7 @@ website:
       - href: index.qmd
         text: Introduction
       - href: shift.qmd
-        text: Creating a Shift Table in R
+        text: Shift Table in R
       - href: about.qmd
         text: References
 

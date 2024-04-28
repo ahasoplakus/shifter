@@ -2,6 +2,10 @@
 title: ""
 ---
 
+<b>About</b>
+
+This project is an entry for [Posit 2024 Table Contest](https://posit.co/blog/announcing-the-2024-table-contest/). An alternative link to the website is available [here](https://ahasoplakus.github.io/shifter/).
+
 <b>References</b>
 
 -   [ICH E3 Structure and Content of Clinical Study Report](https://www.ema.europa.eu/en/documents/scientific-guideline/ich-e-3-structure-and-content-clinical-study-reports-step-5_en.pdf)
@@ -20,4 +24,6 @@ title: ""
 -   [gt](https://github.com/rstudio/gt/)
 -   [here](https://github.com/r-lib/here/)
 -   [pharmaverseadam](https://github.com/pharmaverse/pharmaverseadam/)
--   [DT](https://github.com/rstudio/DT)
+-   [DT](https://github.com/rstudio/DT) (to display intermediate datasets)
+
+*The `hex` sticker of the website was made using [hexmake](https://github.com/ColinFay/hexmake/)*

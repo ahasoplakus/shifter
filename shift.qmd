@@ -39,7 +39,7 @@ adsl <- pharmaverseadam::adsl
 
 ```{r}
 #| echo: false
-glimpse_dataset(adsl)
+glimpse_dataset(adsl, display_vars = exprs(USUBJID, SITEID, TRT01A, SAFFL))
 ```
 
 ## ADLB
@@ -52,7 +52,10 @@ adlb <- pharmaverseadam::adlb
 
 ```{r}
 #| echo: false
-glimpse_dataset(slice_head(adlb, n = 500))
+glimpse_dataset(
+  slice_head(adlb, n = 500),
+  display_vars = exprs(USUBJID, PARAM, PARAMCD, AVISIT, AVAL, BNRIND, ANRIND)
+)
 ```
 :::
 
@@ -227,7 +230,7 @@ shift_final <-
 glimpse_dataset(shift_final)
 ```
 
-### 6. Add percentages
+### 6. Adding Percentages
 
 ```{r pct}
 trt_bign <-
@@ -237,8 +240,10 @@ trt_bign <-
   )
 
 shift_final <- shift_final |>
-  select(where(is.character)) |>
-  bind_cols(num_to_pct(shift_final, trt_bign))
+  add_pct2cols(
+    exclude_cols = exprs(AVISIT, ANRIND),
+    trt_bign = trt_bign
+  )
 ```
 
 ```{r}
@@ -246,7 +251,7 @@ shift_final <- shift_final |>
 glimpse_dataset(shift_final)
 ```
 
-### 7. Displaying Final Table with `{gt}`
+### 7. Displaying the Final Table with `{gt}`
 
 ::: panel-tabset
 ## Single Parameter (Hemoglobin)
@@ -341,8 +346,10 @@ shift_out <- map(adlb_multi$data, \(x) {
 # add percentages
 shift_out <- map(shift_out, \(df) {
   df |>
-    select(where(is.character)) |>
-    bind_cols(num_to_pct(df, trt_bign))
+    add_pct2cols(
+      exclude_cols = exprs(AVISIT, ANRIND),
+      trt_bign = trt_bign
+    )
 })
 
 list_out <-
@@ -354,7 +361,7 @@ list_out <-
         title = "Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab
         Hematology<br>(Full Safety Analysis Set)",
         footnote = "Add footnote here",
-        stub_label = "Analysis Visit"
+        stub_header = "Analysis Visit"
       )
   })
 ```

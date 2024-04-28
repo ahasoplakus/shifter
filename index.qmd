@@ -1,6 +1,6 @@
 ---
 title: "Tidy Shift Tables in R"
-subtitle: "A tidy approach to create Shift Tables using {gt}"
+subtitle: "A tidy approach to create Shift Tables using {tidyverse} and {gt}"
 author: Sukalpo Saha
 date: today
 ---

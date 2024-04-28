@@ -152,7 +152,7 @@ std_shift_display <-
            group_col = "AVISIT",
            title = "",
            footnote = "This is a footnote",
-           stub_label = "Analysis Visit") {
+           stub_header = "Analysis Visit") {
     dataset |>
       gt(groupname_col = group_col, row_group_as_column = TRUE) |>
       cols_label_with(
@@ -163,7 +163,7 @@ std_shift_display <-
         fn = \(x) map(x, \(y) md(paste0(y, "<br>Baseline<br>n (%)"))),
         locations = cells_column_spanners()
       ) |>
-      tab_stubhead(md(stub_label)) |>
+      tab_stubhead(md(stub_header)) |>
       tab_footnote(footnote = footnote) |>
       tab_header(
         title = md(title),
