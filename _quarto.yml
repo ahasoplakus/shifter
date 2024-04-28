@@ -31,10 +31,13 @@ website:
     contents:
       - href: index.qmd
         text: Introduction
+        icon: house-door-fill
       - href: shift.qmd
         text: Shift Table in R
+        icon: code-slash
       - href: about.qmd
-        text: References
+        text: About
+        icon: info-square
 
 format:
   html:

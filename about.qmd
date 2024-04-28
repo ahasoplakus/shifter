@@ -11,6 +11,7 @@ This project is an entry for [Posit 2024 Table Contest](https://posit.co/blog/an
 -   [ICH E3 Structure and Content of Clinical Study Report](https://www.ema.europa.eu/en/documents/scientific-guideline/ich-e-3-structure-and-content-clinical-study-reports-step-5_en.pdf)
 -   [An Effective way to produce a Shift Table](https://www.lexjansen.com/pharmasug-cn/2016/PG/PharmaSUG-China-2016-PG05.pdf)
 -   [Producing Clinical Laboratory Shift Tables From ADaM Data](https://www.pharmasug.org/proceedings/2011/CC/PharmaSUG-2011-CC01.pdf)
+-   [Tables in Clinical Trial with R](https://rconsortium.github.io/rtrs-wg/)
 -   [Tidy Design Principles](https://design.tidyverse.org/)
 -   [The Design Philosophy of Great Tables](https://posit-dev.github.io/great-tables/blog/design-philosophy/)
 

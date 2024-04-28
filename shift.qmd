@@ -17,7 +17,7 @@ suppressPackageStartupMessages(library(stringr))
 suppressPackageStartupMessages(library(gt))
 suppressPackageStartupMessages(library(here))
 
-# some user defined functions are in the files below
+# list all files
 files <- list.files(here("R"), pattern = ".R", full.names = TRUE)
 # Read all files
 walk(files, source)
@@ -133,7 +133,7 @@ adlb_hgb <- adlb_prep |>
 #| echo: false
 glimpse_dataset(
   adlb_hgb,
-  exprs(USUBJID, TRT01A, TRT_VAR, PARCAT1, PARAM, AVISIT, BNRIND, ANRIND, AVAL)
+  exprs(USUBJID, TRT01A, TRT_VAR, PARCAT1, PARAM, AVISIT, BNRIND, ANRIND)
 )
 ```
 
@@ -270,13 +270,16 @@ out <-
   ) |>
   # headers and footers
   tab_stubhead(md("Analysis Visit")) |>
-  tab_footnote(footnote = "This is a footnote") |>
+  tab_footnote(footnote = md("N: Treatment Totals, n: Number of Subjects, %: Percentages of Subjects")) |>
   tab_header(
+    preheader = c("Protocol: CDISCPILOT01", "Cutoff date: DDMMYYYY"), # for rtf
     title = md(
-      "Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab
-      Hematology<br>(Full Safety Analysis Set)"
+      "Table x.x<br>Shift Table of Lab Hematology<br>(Full Safety Analysis Set)"
     ),
     subtitle = paste0("Parameter = ", unique(pull(adlb_hgb, "PARAM")))
+  ) |>
+  tab_source_note(
+    "Source: ADLB DDMMYYYY hh:mm; Listing x.xx; SDTM package: DDMMYYYY"
   ) |>
   # cell styling
   tab_style(
@@ -293,6 +296,12 @@ out <-
   ) |>
   # other options
   tab_options(
+    # rtf options
+    page.orientation = "landscape",
+    page.numbering = TRUE,
+    page.header.use_tbl_headings = TRUE,
+    page.footer.use_tbl_notes = TRUE,
+    # other styling
     table.background.color = "white",
     table.font.names = "monospace-slab-serif",
     row_group.font.weight = "bold",
@@ -308,15 +317,19 @@ out <-
       border-top-style: hidden !important;
     }
     .gt_table {
-      width: 135% !important;
+      width: max-content !important;
     }
-    .gt_subtitle {
+    .gt_subtitle, .gt_footnotes, .gt_sourcenote {
       text-align: left !important;
       color: gray !important;
     }
     "
   )
-out
+```
+
+```{r out_hgb, results='asis'}
+#| echo: false
+print(out)
 ```
 
 ## Multiple Parameters
@@ -358,10 +371,14 @@ list_out <-
       std_shift_display(
         param = x,
         group_col = "AVISIT",
-        title = "Protocol: CDISCPILOT01<br><br>Table x.x<br>Shift Table of Lab
+        stub_header = "Analysis Visit",
+        rtf_preheader = "Protocol: CDISCPILOT01",
+        title = "Table x.x<br>Shift Table of Lab
         Hematology<br>(Full Safety Analysis Set)",
-        footnote = "Add footnote here",
-        stub_header = "Analysis Visit"
+        footnote = "N: Treatment Totals, n: Number of Subjects,
+        %: Percentages of Subjects",
+        sourcenote =
+          "Source: ADLB DDMMYYYY hh:mm; Listing x.xx; SDTM package: DDMMYYYY"
       )
   })
 ```
@@ -371,3 +388,17 @@ list_out <-
 walk(seq_along(list_out), \(i) print(list_out[[i]]))
 ```
 :::
+
+## Saving the Table
+
+```{r save}
+#| eval: false
+
+# as rtf
+gtsave(out, "adlb_rxxxx_20240428.rtf", "path to the output directory")
+# as pdf
+gtsave(out, "adlb_rxxxx_20240428.pdf", "path to the output directory")
+# as word
+gtsave(out, "adlb_rxxxx_20240428.docx", "path to the output directory")
+```
+

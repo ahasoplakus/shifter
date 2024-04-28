@@ -140,9 +140,11 @@ count_shifts <-
 #' @param dataset Input dataset as `data.frame`
 #' @param param Parameter Label
 #' @param group_col Row Grouping Column
-#' @param title Table Title
+#' @param stub_header Stub Header
+#' @param rtf_preheader RTF preheader text
+#' @param title Header Title
 #' @param footnote Table Footnote
-#' @param stub_label Stub Header
+#' @param sourcenote Source Note Citation
 #'
 #' @return `gt` table
 #'
@@ -150,9 +152,11 @@ std_shift_display <-
   function(dataset,
            param = "",
            group_col = "AVISIT",
+           stub_header = "Analysis Visit",
+           rtf_preheader = c("Protocol: CDISCPILOT01", "Cutoff date: DDMMYYYY"),
            title = "",
            footnote = "This is a footnote",
-           stub_header = "Analysis Visit") {
+           sourcenote = "") {
     dataset |>
       gt(groupname_col = group_col, row_group_as_column = TRUE) |>
       cols_label_with(
@@ -166,9 +170,11 @@ std_shift_display <-
       tab_stubhead(md(stub_header)) |>
       tab_footnote(footnote = footnote) |>
       tab_header(
+        preheader = md(rtf_preheader),
         title = md(title),
-        subtitle = paste0("Parameter = ", param)
+        subtitle = md(paste0("Parameter = ", param))
       ) |>
+      tab_source_note(md(sourcenote)) |>
       tab_style(
         style = cell_text(weight = "bold"),
         locations = cells_body(columns = 2)
@@ -182,6 +188,10 @@ std_shift_display <-
         locations = cells_column_labels(columns = -c(1, 2))
       ) |>
       tab_options(
+        page.orientation = "landscape",
+        page.numbering = TRUE,
+        page.header.use_tbl_headings = TRUE,
+        page.footer.use_tbl_notes = TRUE,
         table.background.color = "white",
         table.font.names = "monospace-slab-serif",
         row_group.font.weight = "bold",
@@ -197,9 +207,9 @@ std_shift_display <-
       border-top-style: hidden !important;
     }
     .gt_table {
-      width: 135% !important;
+      width: max-content !important;
     }
-    .gt_subtitle {
+    .gt_subtitle, .gt_footnotes, .gt_sourcenote {
       text-align: left !important;
       color: gray !important;
     }
