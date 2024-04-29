@@ -7,7 +7,7 @@ date: today
 
 ## What is a Shift Table
 
-A shift table is a table that displays the number of subjects in different range (e.g. low, normal, or high) at baseline and then shift or transition at selected time points or time intervals. The purpose of the shift table is to illustrate the progress of change from baseline and help to make reasonable inference.
+A shift table is a table that displays the number of subjects in different ranges (e.g. low, normal, or high) at baseline and then shift or transition at selected time points or time intervals. The purpose of the shift table is to illustrate the progress of change from baseline and help to make reasonable inference.
 
 ## Shift Tables in Clinical Trials
 
