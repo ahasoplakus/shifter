@@ -25,13 +25,12 @@ walk(files, source)
 
 ## Data used for Analysis
 
-We will make use of the `adsl` and `adlb` test <b>ADaM</b> datasets from the [{pharmaverseadam}](https://github.com/pharmaverse/pharmaverseadam) R package
-for analysis.
+We will make use of the `adsl` and `adlb` test <b>ADaM</b> datasets from the [{pharmaverseadam}](https://github.com/pharmaverse/pharmaverseadam) R package for analysis.
 
 ::: panel-tabset
 ## ADSL
 
-<b>ADSL is the analysis dataset for subject level</b>
+<b>ADSL is the subject level analysis dataset</b>
 
 ```{r}
 adsl <- pharmaverseadam::adsl
@@ -44,7 +43,7 @@ glimpse_dataset(adsl, display_vars = exprs(USUBJID, SITEID, TRT01A, SAFFL))
 
 ## ADLB
 
-<b>ADLB is the analysis dataset for Laboratory Records of subjects</b>
+<b>ADLB is the analysis dataset for Laboratory Records</b>
 
 ```{r}
 adlb <- pharmaverseadam::adlb
@@ -78,8 +77,7 @@ glimpse_dataset(
 ### 1. Calculating BIG N
 
 -   Keep only safety subjects (`SAFFL` == `'Y'`) in `adsl`
--   Count number of subjects in the full safety analysis set, participating in each treatment group (`TRT01A`)
--   Will be used as a denominator to calculate percentages in later steps
+-   Count number of subjects in the full safety analysis set within each treatment arm (`TRT01A`)
 
 ```{r adsl_n}
 adsl_bign <- adsl |>
