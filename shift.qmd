@@ -1,5 +1,7 @@
 ---
 title: "Creating a Shift Table in R"
+execute:
+  freeze: true
 ---
 
 Here is a workflow to create a Shift Table in R, using the `{tidyverse}` suite
@@ -104,12 +106,10 @@ see the shifts in Laboratory Tests
 -   Add `BIG N` to treatment labels by concatenating `TRT_N` with `TRT01A`
 
 ```{r prep_adlb}
-#| warning: false
-#| message: false
 adlb_prep <- adlb |>
   na_to_missing() |>
   mutate(across(all_of(c("BNRIND", "ANRIND")), str_to_title)) |>
-  left_join(adsl_bign) |>
+  left_join(adsl_bign, by = c("USUBJID", "TRT01A")) |>
   filter(
     .data$BNRIND != "<Missing>",
     .data$ANRIND != "<Missing>",
