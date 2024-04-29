@@ -66,7 +66,7 @@ summarize_grades <-
 #'
 #' @return `data.frame`
 #'
-count_shifts <-
+count_shifts_by_visit <-
   function(bds_dataset,
            trt_var,
            base_grade_var = exprs(BNRIND),
@@ -168,7 +168,7 @@ std_shift_display <-
         locations = cells_column_spanners()
       ) |>
       tab_stubhead(md(stub_header)) |>
-      tab_footnote(footnote = footnote) |>
+      tab_footnote(footnote = md(footnote)) |>
       tab_header(
         preheader = md(rtf_preheader),
         title = md(title),
@@ -206,11 +206,15 @@ std_shift_display <-
     .gt_heading {
       border-top-style: hidden !important;
     }
+    .gt_sourcenote {
+      border-bottom-style: hidden !important;
+    }
     .gt_table {
       width: max-content !important;
     }
     .gt_subtitle, .gt_footnotes, .gt_sourcenote {
       text-align: left !important;
+      font-weight: bold !important;
       color: gray !important;
     }
     "

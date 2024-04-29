@@ -75,10 +75,11 @@ glimpse_dataset(
 
 ## Programming Flow
 
-### 1. Calculating BIG N (Treatment Totals)
+### 1. Calculating BIG N
 
 -   Keep only safety subjects (`SAFFL` == `'Y'`) in `adsl`
--   Count number of subjects participating in each treatment group (`TRT01A`)
+-   Count number of subjects in the full safety analysis set, participating in each treatment group (`TRT01A`)
+-   Will be used as a denominator to calculate percentages in later steps
 
 ```{r adsl_n}
 adsl_bign <- adsl |>
@@ -99,9 +100,9 @@ glimpse_dataset(adsl_bign)
 -   Filter out missing values in Baseline Reference Range Indicator (`BNRIND`),
 Analysis Reference Range Indicator (`ANRIND`) and Analysis Value (`AVAL`)
 -   Subset the resulting data for subjects with post-does records where analysis
-flag is equal to `'Y'`
--   Subset data to keep lab records within the desired time period
-(eg. `Week 2-Week 6`)
+flag (`ANL01FL`) is equal to `'Y'`
+-   Subset data to keep records within the time period (eg. `Week 2, Week 4, Week 6`) we want to 
+see the shifts in Laboratory Tests
 -   Add `BIG N` to treatment labels by concatenating `TRT_N` with `TRT01A`
 
 ```{r prep_adlb}
@@ -210,12 +211,12 @@ shift_final <- shift_wide |>
 ```
 
 An alternate and tidier approach would be to create a function say
-`count_shifts()` to cover <b>Steps 3-5</b>
+`count_shifts_by_visit()` to cover <b>Steps 3-5</b>
 
 ```{r}
 #| eval: false
 shift_final <-
-  count_shifts(
+  count_shifts_by_visit(
     bds_dataset = adlb_hgb,
     trt_var = exprs(TRT_VAR),
     analysis_grade_var = exprs(ANRIND),
@@ -270,7 +271,7 @@ out <-
   ) |>
   # headers and footers
   tab_stubhead(md("Analysis Visit")) |>
-  tab_footnote(footnote = md("N: Treatment Totals, n: Number of Subjects, %: Percentages of Subjects")) |>
+  tab_footnote(footnote = md("N: Number of subjects in the full safety analysis set, within each treatment group<br>n: Subjects with at least one baseline and post-baseline records")) |>
   tab_header(
     preheader = c("Protocol: CDISCPILOT01", "Cutoff date: DDMMYYYY"), # for rtf
     title = md(
@@ -301,6 +302,7 @@ out <-
     page.numbering = TRUE,
     page.header.use_tbl_headings = TRUE,
     page.footer.use_tbl_notes = TRUE,
+    # page.height = "18in", uncomment to modify page dimensions while saving as rtf
     # other styling
     table.background.color = "white",
     table.font.names = "monospace-slab-serif",
@@ -316,11 +318,15 @@ out <-
     .gt_heading {
       border-top-style: hidden !important;
     }
+    .gt_sourcenote {
+      border-bottom-style: hidden !important;
+    }
     .gt_table {
       width: max-content !important;
     }
     .gt_subtitle, .gt_footnotes, .gt_sourcenote {
       text-align: left !important;
+      font-weight: bold !important;
       color: gray !important;
     }
     "
@@ -335,17 +341,19 @@ print(out)
 ## Multiple Parameters
 
 -   Split `adlb_prep` by multiple parameters.
--   Map over `count_shifts()` on the data split by parameters
+-   Map over `count_shifts_by_visit()` on the data split by parameters
+-   Add percentages to numeric columns within each resulting `data.frame`
+from `count_shifts_by_visit()`
 -   Create a function `std_shift_display()` to combine the `{gt}` table display
 steps and map it over on the `list` output retrieved from the previous step
 
-```{r}
+```{r iteration,results='asis'}
 adlb_multi <- adlb_prep |>
   filter(toupper(.data$PARAMCD) %in% c("PLAT", "HCT", "MCH")) |>
   group_nest(.data$PARAM)
 
 shift_out <- map(adlb_multi$data, \(x) {
-  count_shifts(
+  count_shifts_by_visit(
     bds_dataset = x,
     trt_var = exprs(TRT_VAR),
     analysis_grade_var = exprs(ANRIND),
@@ -375,17 +383,13 @@ list_out <-
         rtf_preheader = "Protocol: CDISCPILOT01",
         title = "Table x.x<br>Shift Table of Lab
         Hematology<br>(Full Safety Analysis Set)",
-        footnote = "N: Treatment Totals, n: Number of Subjects,
-        %: Percentages of Subjects",
+        footnote = "N: Number of subjects in the full safety analysis set, within each treatment group<br>n: Subjects with at least one baseline and post-baseline records",
         sourcenote =
           "Source: ADLB DDMMYYYY hh:mm; Listing x.xx; SDTM package: DDMMYYYY"
       )
   })
-```
 
-```{r list, results='asis'}
-#| echo: false
-walk(seq_along(list_out), \(i) print(list_out[[i]]))
+gt_group(.list = list_out)
 ```
 :::
 
@@ -400,5 +404,7 @@ gtsave(out, "adlb_rxxxx_20240428.rtf", "path to the output directory")
 gtsave(out, "adlb_rxxxx_20240428.pdf", "path to the output directory")
 # as word
 gtsave(out, "adlb_rxxxx_20240428.docx", "path to the output directory")
+# as html
+gtsave(out, "adlb_rxxxx_20240428.html", "path to the output directory")
 ```
 
