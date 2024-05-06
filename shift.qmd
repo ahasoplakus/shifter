@@ -391,6 +391,20 @@ gt_group(.list = list_out)
 ```
 :::
 
+## Colorize cells (Optional)
+
+Suppose we want to highlight values which are `Normal` in Baseline but `Low` or 
+`High` in post-baseline
+
+```{r, results='asis'}
+out |>
+  data_color(
+    columns = contains("Normal"),
+    rows = ANRIND %in% c("High", "Low"),
+    palette = c("white", "lightpink")
+  )
+```
+
 ## Saving the Table
 
 ```{r save}
