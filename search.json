@@ -50,6 +50,16 @@
     ]
   },
   {
+    "objectID": "shift.html#colorize-cells-optional",
+    "href": "shift.html#colorize-cells-optional",
+    "title": "Creating a Shift Table in R",
+    "section": "Colorize cells (Optional)",
+    "text": "Colorize cells (Optional)\nSuppose we want to highlight values which are Normal in Baseline but Low or High in post-baseline\n\nCode\nout |&gt;\n  data_color(\n    columns = contains(\"Normal\"),\n    rows = ANRIND %in% c(\"High\", \"Low\"),\n    palette = c(\"white\", \"lightpink\")\n  )\n\n\n\n\n\n  \n    \n      Table x.xShift Table of Lab Hematology(Full Safety Analysis Set)\n    \n    \n      Parameter = Hemoglobin (mmol/L)\n    \n    \n      Analysis Visit\n      ReferenceRange\n      \n        Placebo(N=86)Baselinen (%)\n      \n      \n        Xanomeline High Dose(N=72)Baselinen (%)\n      \n      \n        Xanomeline Low Dose(N=96)Baselinen (%)\n      \n    \n    \n      Low\n      Normal\n      High\n      Total\n      Low\n      Normal\n      High\n      Total\n      Low\n      Normal\n      High\n      Total\n    \n  \n  \n    Week 2\nLow\n4 (4.7%)\n2 (2.3%)\n0\n6 (7%)\n1 (1.4%)\n3 (4.2%)\n0\n4 (5.6%)\n4 (4.2%)\n0\n0\n4 (4.2%)\n    Normal\n3 (3.5%)\n73 (84.9%)\n0\n76 (88.4%)\n0\n65 (90.3%)\n2 (2.8%)\n67 (93.1%)\n1 (1%)\n67 (69.8%)\n1 (1%)\n69 (71.9%)\n    High\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n0\n    Total\n7 (8.1%)\n75 (87.2%)\n0\n82 (95.3%)\n1 (1.4%)\n68 (94.4%)\n2 (2.8%)\n71 (98.6%)\n5 (5.2%)\n67 (69.8%)\n1 (1%)\n73 (76%)\n    Week 4\nLow\n4 (4.7%)\n2 (2.3%)\n0\n6 (7%)\n1 (1.4%)\n0\n0\n1 (1.4%)\n4 (4.2%)\n2 (2.1%)\n0\n6 (6.2%)\n    Normal\n1 (1.2%)\n68 (79.1%)\n0\n69 (80.2%)\n0\n63 (87.5%)\n1 (1.4%)\n64 (88.9%)\n1 (1%)\n57 (59.4%)\n0\n58 (60.4%)\n    High\n0\n0\n0\n0\n0\n1 (1.4%)\n0\n1 (1.4%)\n0\n0\n0\n0\n    Total\n5 (5.8%)\n70 (81.4%)\n0\n75 (87.2%)\n1 (1.4%)\n64 (88.9%)\n1 (1.4%)\n66 (91.7%)\n5 (5.2%)\n59 (61.5%)\n0\n64 (66.7%)\n    Week 6\nLow\n3 (3.5%)\n1 (1.2%)\n0\n4 (4.7%)\n0\n1 (1.4%)\n0\n1 (1.4%)\n4 (4.2%)\n3 (3.1%)\n0\n7 (7.3%)\n    Normal\n2 (2.3%)\n64 (74.4%)\n0\n66 (76.7%)\n0\n51 (70.8%)\n1 (1.4%)\n52 (72.2%)\n1 (1%)\n50 (52.1%)\n0\n51 (53.1%)\n    High\n0\n1 (1.2%)\n0\n1 (1.2%)\n0\n1 (1.4%)\n0\n1 (1.4%)\n0\n0\n0\n0\n    Total\n5 (5.8%)\n66 (76.7%)\n0\n71 (82.6%)\n0\n53 (73.6%)\n1 (1.4%)\n54 (75%)\n5 (5.2%)\n53 (55.2%)\n0\n58 (60.4%)\n  \n  \n    \n      Source: ADLB DDMMYYYY hh:mm; Listing x.xx; SDTM package: DDMMYYYY\n    \n  \n  \n    \n       N: Number of subjects in the full safety analysis set, within each treatment groupn: Subjects with at least one baseline and post-baseline records",
+    "crumbs": [
+      "Shift Table in R"
+    ]
+  },
+  {
     "objectID": "shift.html#saving-the-table",
     "href": "shift.html#saving-the-table",
     "title": "Creating a Shift Table in R",
